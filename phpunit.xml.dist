@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit>
+    <php>
+        <env name="SMONEY_ENDPOINT" value="https://rest-pp.s-money.fr/api/sandbox" />
+        <env name="SMONEY_TOKEN" value="" />
+    </php>
+    <testsuites>
+        <testsuite name="S-Money PHP client">
+            <directory>tests/</directory>
+        </testsuite>
+    </testsuites>
+	<filter>
+		<whitelist processUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">./src</directory>
+		</whitelist>
+	</filter>
+</phpunit>
