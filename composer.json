@@ -1,4 +1,7 @@
 {
+    "name": "assoconnect/smoney-client",
+    "description": "PHP client for S-Money API",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "AssoConnect\\SMoney\\": "src/"

@@ -8,7 +8,6 @@ use AssoConnect\SMoney\Object\Company;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
-use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase
