@@ -14,7 +14,7 @@ before_script:
   
 script:
   - vendor/bin/phpunit --coverage-clover ./tests/logs/clover.xml
-  - php phpcs.phar --standard=PSR12 ./src
+  - php phpcs.phar --standard=PSR12 --ignore=/vendor/* ./
 
 after_script:
   - vendor/bin/php-coveralls -v
