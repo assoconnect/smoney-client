@@ -13,7 +13,7 @@ Feel free to submit a PR or contact us if you need a missing feature.
 The package uses [Guzzle](https://github.com/guzzle/guzzle) as an HTTP client.
 
 ## Installation
-This package can be install with composer
+This package can be installed with composer
 
 `composer require assoconnect/smoney-client`
 
