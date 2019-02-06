@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace AssoConnect\SMoney;
 
+use AssoConnect\SMoney\Exception\InvalidSignatureException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\Company;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Client
@@ -37,11 +38,19 @@ class Client
      */
     protected $token;
 
-    public function __construct(string $endpoint, string $token, ClientInterface $client)
+    /**
+     * S-Money signature
+     *
+     * @var String
+     */
+    protected $signature;
+
+    public function __construct(string $endpoint, string $token, ClientInterface $client, string $signature)
     {
         $this->client = $client;
         $this->endpoint = $endpoint;
         $this->token = $token;
+        $this->signature = $signature;
     }
 
     /**
@@ -229,5 +238,23 @@ class Client
         $subAccount = new SubAccount($subAccountData);
 
         return $subAccount;
+    }
+
+    public function verifySignature(MessageInterface $message)
+    {
+        parse_str($message->getBody()->__toString(), $body);
+
+        if (array_key_exists('CallbackSignature', $body) === false) {
+            throw new InvalidSignatureException('Missing signature');
+        }
+        $signature = $body['CallbackSignature'];
+        unset($body['CallbackSignature']);
+
+        ksort($body);
+        $body[] = $this->signature;
+        $hash = implode('+', array_values($body));
+        if (sha1($hash) !== $signature) {
+            throw new InvalidSignatureException('Invalid signature');
+        }
     }
 }

@@ -4,6 +4,8 @@
     <php>
         <env name="SMONEY_ENDPOINT" value="https://rest-pp.s-money.fr/api/sandbox" />
         <env name="SMONEY_TOKEN" value="" />
+        <env name="SMONEY_SIGNATURE" value="0" />
+
     </php>
     <testsuites>
         <testsuite name="S-Money PHP client">
