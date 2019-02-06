@@ -3,11 +3,14 @@
 namespace AssoConnect\Tests;
 
 use AssoConnect\SMoney\Client;
+use AssoConnect\SMoney\Exception\InvalidSignatureException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\Company;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Request;
 use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase
@@ -16,10 +19,11 @@ class ClientTest extends TestCase
     {
         $token = getenv('SMONEY_TOKEN');
         $endpoint = getenv('SMONEY_ENDPOINT');
+        $signature = getenv('SMONEY_SIGNATURE');
 
         $guzzleClient = new \GuzzleHttp\Client();
 
-        $client = new Client($endpoint, $token, $guzzleClient);
+        $client = new Client($endpoint, $token, $guzzleClient, $signature);
 
         return $client;
     }
@@ -129,7 +133,7 @@ class ClientTest extends TestCase
         $this->assertSame(json_encode($subAccount), json_encode($_subAccount));
     }
 
-    public function testException()
+    public function testCreateUserException()
     {
         $client = $this->createClient();
         //Creating a user under 18 years old
@@ -154,7 +158,43 @@ class ClientTest extends TestCase
             ]),
         ]);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(ClientException::class);
         $client->createUser($user);
+    }
+
+    public function testVerifySignatureValid()
+    {
+        $client = $this->createClient();
+
+        $body = 'orderId=123456&amount=1020&CallbackSignature=814de6e4d24008b1764fe093026b5127cddbf6c2';
+        $request = new Request('POST', 'uri', [], $body, 1.1);
+
+        $client->verifySignature($request);
+
+        $this->expectNotToPerformAssertions();
+    }
+
+    public function testVerifySignatureInvalid()
+    {
+        $client = $this->createClient();
+
+        $body = 'orderId=123456&amount=1020&CallbackSignature=invalid_signature';
+        $request = new Request('POST', 'uri', [], $body, 1.1);
+
+        $this->expectException(InvalidSignatureException::class);
+        $this->expectExceptionMessage('Invalid signature');
+        $client->verifySignature($request);
+    }
+
+    public function testVerifySignatureMissing()
+    {
+        $client = $this->createClient();
+
+        $body = 'orderId=123456&amount=1020';
+        $request = new Request('POST', 'uri', [], $body, 1.1);
+
+        $this->expectException(InvalidSignatureException::class);
+        $this->expectExceptionMessage('Missing signature');
+        $client->verifySignature($request);
     }
 }
