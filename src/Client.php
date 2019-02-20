@@ -6,6 +6,7 @@ namespace AssoConnect\SMoney;
 
 use AssoConnect\SMoney\Exception\InvalidSignatureException;
 use AssoConnect\SMoney\Object\Address;
+use AssoConnect\SMoney\Object\BankAccount;
 use AssoConnect\SMoney\Object\Company;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
@@ -14,6 +15,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 class Client
 {
@@ -62,26 +64,27 @@ class Client
      * @param  int           $version API Version
      * @return Response
      */
-    protected function query(string $path, string $method, iterable $data = null, int $version = 1): ResponseInterface
-    {
-        if ($method === 'GET') {
-            $options = [
-                'headers' => [
-                    'Accept'        => 'application/vnd.s-money.v' . $version . '+json',
-                    'Authorization' => 'Bearer ' . $this->token,
-                ]
-            ];
-        }
+    protected function query(
+        string $path,
+        string $method,
+        iterable $data = null,
+        int $version = 1,
+        $options = []
+    ): ResponseInterface {
+        $options = array_merge_recursive([
+            'headers' => [
+                'Accept'        => 'application/vnd.s-money.v' . $version . '+json',
+                'Authorization' => 'Bearer ' . $this->token,
+            ]
+        ], $options);
 
-        if ($method === 'POST' or $method === 'PUT') {
-            $options = [
-                'json'          => $data,
-                'headers'       => [
-                    'Accept'        => 'application/vnd.s-money.v' . $version . '+json',
-                    'Content-Type'  => 'application/vnd.s-money.v' . $version . '+json',
-                    'Authorization' => 'Bearer ' . $this->token,
+        if ($data !== null) {
+            $options = array_merge_recursive($options, [
+                'json' => $data,
+                'headers' => [
+                    'Content-Type' => 'application/vnd.s-money.v' . $version . '+json',
                 ]
-            ];
+            ]);
         }
 
         return $this->client->request($method, $this->endpoint . $path, $options);
@@ -194,9 +197,9 @@ class Client
         return $user;
     }
 
-    public function createSubAccount(string $appUserId, SubAccount $subAccount): SubAccount
+    public function createSubAccount(User $user, SubAccount $subAccount): SubAccount
     {
-        $path = '/users/' . $appUserId . '/subaccounts';
+        $path = '/users/' . $user->appUserId . '/subaccounts';
         $method = 'POST';
         $data = [
             'appaccountid' => $subAccount->appAccountId,
@@ -209,9 +212,9 @@ class Client
         return $subAccount;
     }
 
-    public function updateSubAccount(string $appUserId, SubAccount $subAccount): SubAccount
+    public function updateSubAccount(User $user, SubAccount $subAccount): SubAccount
     {
-        $path = '/users/' . $appUserId . '/subaccounts/' . $subAccount->appAccountId;
+        $path = '/users/' . $user->appUserId . '/subaccounts/' . $subAccount->appAccountId;
         $method = 'PUT';
         $data = [
             'displayName' => $subAccount->displayName,
@@ -221,9 +224,9 @@ class Client
         return $subAccount;
     }
 
-    public function getSubAccount(string $appUserId, string $appAccountId): SubAccount
+    public function getSubAccount(User $user, string $appAccountId): SubAccount
     {
-        $path = '/users/' . $appUserId . '/subaccounts/' . $appAccountId;
+        $path = '/users/' . $user->appUserId . '/subaccounts/' . $appAccountId;
         $method = 'GET';
         $res = $this->query($path, $method);
 
@@ -238,6 +241,64 @@ class Client
         $subAccount = new SubAccount($subAccountData);
 
         return $subAccount;
+    }
+
+    public function createBankAccount(User $user, BankAccount $bankAccount) :BankAccount
+    {
+        $path = '/users/' . $user->appUserId . '/bankaccounts';
+        $method = 'POST';
+        $data = [
+            'displayname' => $bankAccount->displayName,
+            'bic'  => $bankAccount->bic,
+            'iban'  => $bankAccount->iban,
+        ];
+        $res = $this->query($path, $method, $data);
+        $data = json_decode($res->getBody()->__toString(), true);
+        $bankAccount->id = $data['Id'];
+        $bankAccount->status = $data['Status'];
+        return $bankAccount;
+    }
+
+    public function getBankAccount(user $user, BankAccount $bankAccount) :BankAccount
+    {
+        $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id;
+        $method = 'GET';
+        $res = $this->query($path, $method);
+
+        $data = json_decode($res->getBody()->__toString(), true);
+        $bankAccountData = [
+            'id' => $data['Id'],
+            'displayName' => $data['DisplayName'],
+            'bic' => $data['Bic'],
+            'iban' => $data['Iban'],
+            'status' => $data['Status'],
+        ];
+        $bankAccount = new BankAccount($bankAccountData);
+
+        return $bankAccount;
+    }
+
+    public function updateBankAccount(User $user, BankAccount $bankAccount) :BankAccount
+    {
+        $path = '/users/' . $user->appUserId . '/bankaccounts/';
+        $method = 'PUT';
+        $data = [
+            'id' => $bankAccount->id,
+            'displayName' => $bankAccount->displayName,
+        ];
+
+        $this->query($path, $method, $data);
+        return $bankAccount;
+    }
+
+    public function deleteBankAccount(User $user, BankAccount $bankAccount) :bool
+    {
+        $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id;
+        $method = 'DELETE';
+
+        $this->query($path, $method);
+        $bankAccount->id = null;
+        return true;
     }
 
     public function verifySignature(MessageInterface $message)
@@ -256,5 +317,28 @@ class Client
         if (sha1($hash) !== $signature) {
             throw new InvalidSignatureException('Invalid signature');
         }
+    }
+
+    public function submitKYCAccountRequest(User $user, BankAccount $bankAccount, UploadedFileInterface $bankDetails)
+    {
+        $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id . '/rib/attachments';
+        $method = 'POST';
+
+        $pathInfo = pathinfo($bankDetails->getClientFilename(), PATHINFO_FILENAME);
+        $filename = $bankAccount->iban . ' - ' . date('Y-m-d H:i:s') . '.' . $pathInfo;
+
+        $options = [
+            'multipart' => [
+                [
+                    'name' => $bankAccount->iban,
+                    'filename' => $filename,
+                    'contents' => $bankDetails->getStream(),
+                    'headers' => [
+                        'Content-Type' => $bankDetails->getClientMediaType(),
+                    ]
+                ],
+            ],
+        ];
+        $this->query($path, $method, null, 1, $options);
     }
 }

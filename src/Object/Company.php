@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AssoConnect\SMoney\Object;
 
-class Company extends User
+class Company extends AbstractHydratable
 {
     /**
      * Company or association name

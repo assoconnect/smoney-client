@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AssoConnect\SMoney\Object;
 
-class UserProfile extends User
+class UserProfile extends AbstractHydratable
 {
     const CIVILITY_MR = 0;
     const CIVILITY_MRS_MISS = 1;

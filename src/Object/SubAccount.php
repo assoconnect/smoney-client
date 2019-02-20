@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AssoConnect\SMoney\Object;
 
-class SubAccount extends User
+class SubAccount extends AbstractHydratable
 {
     /**
      * Account identifier

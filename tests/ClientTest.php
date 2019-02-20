@@ -5,12 +5,14 @@ namespace AssoConnect\Tests;
 use AssoConnect\SMoney\Client;
 use AssoConnect\SMoney\Exception\InvalidSignatureException;
 use AssoConnect\SMoney\Object\Address;
+use AssoConnect\SMoney\Object\BankAccount;
 use AssoConnect\SMoney\Object\Company;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\UploadedFile;
 use PHPUnit\Framework\TestCase;
 
 class ClientTest extends TestCase
@@ -28,6 +30,60 @@ class ClientTest extends TestCase
         return $client;
     }
 
+    protected function helperCreateUser(bool $pro) :User
+    {
+        $client = $this->createClient();
+        $birthdate = new \DateTime();
+        $birthdate->setDate(1980, 1, 1);
+        $birthdate->setTime(0, 0, 0, 0);
+
+        if ($pro === true) {
+            $userPro = new User([
+                'appUserId' => 'appuserid-' . uniqid(),
+                'type' => User::TYPE_PROFESSIONAL_CLIENT,
+                'profile' => new UserProfile([
+                    'civility' => UserProfile::CIVILITY_MR,
+                    'firstname' => 'Test',
+                    'lastname' => 'McTestington',
+                    'birthdate' => $birthdate,
+                    'address' => new Address([
+                        'street' => 'rue du Test',
+                        'zipcode' => '75002',
+                        'city' => 'TestVille',
+                        'country' => 'FR',
+                    ]),
+                    'email' => 'test-' . uniqid() . '@test.com',
+                ]),
+                'company' => new Company([
+                    'name' => 'CompanyName',
+                    'siret' => '123456789',
+                    'nafCode' => '4741Z',
+                ])
+            ]);
+
+            return $client->createUser($userPro);
+        } else {
+            $user = new User([
+                'appUserId' => 'appuserid-' . uniqid(),
+                'type' => User::TYPE_INDIVIDUAL_CLIENT,
+                'profile' => new UserProfile([
+                    'civility' => UserProfile::CIVILITY_MR,
+                    'firstname' => 'Test',
+                    'lastname' => 'McTestington',
+                    'birthdate' => $birthdate,
+                    'address' => new Address([
+                        'street' => 'rue du Test',
+                        'zipcode' => '75002',
+                        'city' => 'TestVille',
+                        'country' => 'FR',
+                    ]),
+                    'email' => 'test-' . uniqid() . '@test.com',
+                ]),
+            ]);
+            return $client->createUser($user);
+        }
+    }
+
     public function testCreateGetUpdate()
     {
         $client = $this->createClient();
@@ -35,31 +91,7 @@ class ClientTest extends TestCase
         $birthdate->setDate(1980, 1, 1);
         $birthdate->setTime(0, 0, 0, 0);
 
-        //Testing professional user
-        $userPro = new User([
-            'appUserId' => 'appuserid-' . uniqid(),
-            'type' => User::TYPE_PROFESSIONAL_CLIENT,
-            'profile' => new UserProfile([
-                'civility' => UserProfile::CIVILITY_MR,
-                'firstname' => 'Test',
-                'lastname' => 'McTestington',
-                'birthdate' => $birthdate,
-                'address' => new Address([
-                    'street' => 'rue du Test',
-                    'zipcode' => '75002',
-                    'city' => 'TestVille',
-                    'country' => 'FR',
-                ]),
-                'email' => 'test-' . uniqid() . '@test.com',
-            ]),
-            'company' => new Company([
-                'name' => 'CompanyName',
-                'siret' => '123456789',
-                'nafCode' => '4741Z',
-            ])
-        ]);
-
-        $userPro = $client->createUser($userPro);
+        $userPro = $this->helperCreateUser($pro = true);
         $this->assertNotNull($userPro->id);
         $this->assertSame(json_encode($userPro), json_encode($client->getUser($userPro->appUserId)));
 
@@ -76,26 +108,7 @@ class ClientTest extends TestCase
 
         $this->assertSame(json_encode($userPro), json_encode($client->getUser($userPro->appUserId)));
 
-        // Testing individual user
-        $user = new User([
-            'appUserId' => 'appuserid-' . uniqid(),
-            'type' => User::TYPE_INDIVIDUAL_CLIENT,
-            'profile' => new UserProfile([
-                'civility' => UserProfile::CIVILITY_MR,
-                'firstname' => 'Test',
-                'lastname' => 'McTestington',
-                'birthdate' => $birthdate,
-                'address' => new Address([
-                    'street' => 'rue du Test',
-                    'zipcode' => '75002',
-                    'city' => 'TestVille',
-                    'country' => 'FR',
-                ]),
-                'email' => 'test-' . uniqid() . '@test.com',
-            ]),
-        ]);
-
-        $user = $client->createUser($user);
+        $user = $this->helperCreateUser($pro = false);
         $this->assertNotNull($user->id);
         $this->assertSame(json_encode($user), json_encode($client->getUser($user->appUserId)));
 
@@ -119,17 +132,17 @@ class ClientTest extends TestCase
             'displayName' => 'SubAccountName',
         ]);
 
-        $subAccount = $client->createSubAccount($user->appUserId, $subAccount);
+        $subAccount = $client->createSubAccount($user, $subAccount);
         $this->assertNotNull($subAccount->id);
 
-        $_subAccount = $client->getSubAccount($user->appUserId, $subAccount->appAccountId);
+        $_subAccount = $client->getSubAccount($user, $subAccount->appAccountId);
         $this->assertSame(json_encode($subAccount), json_encode($_subAccount));
 
         $subAccount->displayName = 'NewName';
 
-        $client->updateSubAccount($user->appUserId, $subAccount);
+        $client->updateSubAccount($user, $subAccount);
 
-        $_subAccount = $client->getSubAccount($user->appUserId, $subAccount->appAccountId);
+        $_subAccount = $client->getSubAccount($user, $subAccount->appAccountId);
         $this->assertSame(json_encode($subAccount), json_encode($_subAccount));
     }
 
@@ -160,6 +173,35 @@ class ClientTest extends TestCase
 
         $this->expectException(ClientException::class);
         $client->createUser($user);
+    }
+
+    public function testCreateGetUpdateDeleteBankAccount()
+    {
+        $user = $this->helperCreateUser($pro = true);
+
+        $params = [
+            'displayName' => 'bank account',
+            'bic' => 'CMCIFR2A',
+            'iban' => 'FR7610011000201234567890188',
+        ];
+        $bankAccount = new BankAccount($params);
+
+        $client = $this->createClient();
+        $client->createBankAccount($user, $bankAccount);
+
+        $this->assertNotNull($bankAccount->id);
+        $this->assertNotNull($bankAccount->status);
+
+        $this->assertSame(json_encode($bankAccount), json_encode($client->getBankAccount($user, $bankAccount)));
+
+        $bankAccount->displayName = 'newName';
+
+        $client->updateBankAccount($user, $bankAccount);
+
+        $this->assertSame(json_encode($bankAccount), json_encode($client->getBankAccount($user, $bankAccount)));
+
+        $this->assertTrue($client->DeleteBankAccount($user, $bankAccount));
+        $this->assertNull($bankAccount->id);
     }
 
     public function testVerifySignatureValid()
@@ -196,5 +238,29 @@ class ClientTest extends TestCase
         $this->expectException(InvalidSignatureException::class);
         $this->expectExceptionMessage('Missing signature');
         $client->verifySignature($request);
+    }
+
+    public function testSubmitKYCAccountRequest()
+    {
+        $client = $this->createClient();
+
+        $userPro = $this->helperCreateUser($pro = true);
+
+        $params = [
+            'displayName' => 'bank account',
+            'bic' => 'CMCIFR2A',
+            'iban' => 'FR7610011000201234567890188',
+        ];
+        $bankAccount = new BankAccount($params);
+
+        $client->createBankAccount($userPro, $bankAccount);
+
+        $file = __DIR__ . '/data/sample.pdf';
+        $stream = fopen($file, 'r+');
+        $filesize = filesize($file);
+        $bankDetails = new UploadedFile($stream, $filesize, UPLOAD_ERR_OK, 'sample.pdf', 'application/pdf');
+
+        $this->markTestSkipped('S-Money validates new account and thus prevents to submit a KYC request');
+        $client->submitKYCAccountRequest($userPro, $bankAccount, $bankDetails);
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AssoConnect\SMoney\Object;
 
-class Address extends UserProfile
+class Address extends AbstractHydratable
 {
     /**
      * Number and street
