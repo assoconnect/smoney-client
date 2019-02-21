@@ -7,6 +7,7 @@ namespace AssoConnect\SMoney;
 use AssoConnect\SMoney\Exception\InvalidSignatureException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\Company;
+use AssoConnect\SMoney\Object\KYC;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
@@ -256,5 +257,25 @@ class Client
         if (sha1($hash) !== $signature) {
             throw new InvalidSignatureException('Invalid signature');
         }
+    }
+
+    public function retrieveKYCrequest(User $user) :KYC
+    {
+        $path = '/users/' . $user->appUserId . '/kyc/';
+        $method = 'GET';
+
+        $res = $this->query($path, $method);
+
+        $data = json_decode($res->getBody()->__toString(), true);
+
+        $kycData = [
+            'id' => $data['Id'],
+            'requestDate' => $data['RequestDate'],
+            'status' => $data['Status'],
+            'reason' => $data['Reason'],
+        ];
+        $kyc = new KYC($kycData);
+
+        return $kyc;
     }
 }
