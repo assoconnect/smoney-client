@@ -263,4 +263,30 @@ class ClientTest extends TestCase
         $this->markTestSkipped('S-Money validates new account and thus prevents to submit a KYC request');
         $client->submitKYCAccountRequest($userPro, $bankAccount, $bankDetails);
     }
+
+    public function testCreateKYCrequest()
+    {
+        $client = $this->createClient();
+
+        $userPro = $this->helperCreateUser($pro = true);
+
+        $file1 = __DIR__ . '/data/image2.jpg';
+        $stream1 = fopen($file1, 'r+');
+        $filesize1 = filesize($file1);
+
+        $file2 = __DIR__ . '/data/image2.png';
+        $stream2 = fopen($file2, 'r+');
+        $filesize2 = filesize($file2);
+
+        $file1 = new UploadedFile($stream1, $filesize1, UPLOAD_ERR_OK, 'image2.jpg', 'image/jpg');
+        $file2 = new UploadedFile($stream2, $filesize2, UPLOAD_ERR_OK, 'image2.png', 'image/png');
+
+
+        $files = [
+            'address' => $file1,
+            'id' => $file2,
+        ];
+
+        $client->createKYCrequest($userPro, $files);
+    }
 }

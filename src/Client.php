@@ -14,6 +14,7 @@ use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\UploadedFile;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -341,6 +342,45 @@ class Client
             ],
         ];
         $this->query($path, $method, null, 1, $options);
+    }
+
+    public function createKYCrequest(User $user, array $files)
+    {
+        $path = '/users/' . $user->appUserId . '/kyc/';
+        $method = 'POST';
+        $count = 0;
+
+        /**
+         * @var UploadedFileInterface $file
+         */
+        foreach ($files as $name => $file) {
+            $name = preg_replace('#[^a-zA-Z0-9]+#', '-', $name);
+            $pathInfo = pathinfo($file->getClientFilename(), PATHINFO_FILENAME);
+            $filename = $name . ' - ' . date('Y-m-d H:i:s') . '.' . $pathInfo;
+
+            $options['multipart'][$count] = [
+                        'name' => $name,
+                        'filename' => $filename,
+                        'contents' => $file->getStream(),
+                        'headers' => [
+                            'Content-Type' => $file->getClientMediaType(),
+                    ],
+            ];
+            $count++;
+        }
+        $res = $this->query($path, $method, null, 1, $options);
+
+        $data = json_decode($res->getBody()->__toString(), true);
+
+        $kycData = [
+            'id' => $data['Id'],
+            'requestDate' => $data['RequestDate'],
+            'status' => $data['Status'],
+            'reason' => $data['Reason'],
+        ];
+        $kyc = new KYC($kycData);
+
+        return $kyc;
     }
 
     public function retrieveKYCrequest(User $user) :KYC
