@@ -7,6 +7,7 @@ use AssoConnect\SMoney\Exception\InvalidSignatureException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
 use AssoConnect\SMoney\Object\Company;
+use AssoConnect\SMoney\Object\KYC;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
@@ -262,5 +263,35 @@ class ClientTest extends TestCase
 
         $this->markTestSkipped('S-Money validates new account and thus prevents to submit a KYC request');
         $client->submitKYCAccountRequest($userPro, $bankAccount, $bankDetails);
+    }
+
+    public function testCreateKYCRequestRetrieveKYCRequest()
+    {
+        $client = $this->createClient();
+
+        $userPro = $this->helperCreateUser($pro = true);
+
+        $file1 = __DIR__ . '/data/image2.jpg';
+        $stream1 = fopen($file1, 'r+');
+        $filesize1 = filesize($file1);
+
+        $file2 = __DIR__ . '/data/image2.png';
+        $stream2 = fopen($file2, 'r+');
+        $filesize2 = filesize($file2);
+
+        $file1 = new UploadedFile($stream1, $filesize1, UPLOAD_ERR_OK, 'image2.jpg', 'image/jpeg');
+        $file2 = new UploadedFile($stream2, $filesize2, UPLOAD_ERR_OK, 'image2.png', 'image/png');
+
+
+        $files = [
+            'address' => $file1,
+            'id' => $file2,
+        ];
+
+        $kyc = $client->createKYCrequest($userPro, $files);
+
+        $this->assertSame(KYC::STATUS_PENDING, $kyc->status);
+
+        $this->assertSame($kyc->id, $client->retrieveKYCRequest($userPro)->id);
     }
 }

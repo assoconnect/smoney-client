@@ -14,6 +14,7 @@ use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\UploadedFile;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -72,7 +73,8 @@ class Client
         int $version = 1,
         $options = []
     ): ResponseInterface {
-        $options = array_merge_recursive([
+
+        $options = array_merge([
             'headers' => [
                 'Accept'        => 'application/vnd.s-money.v' . $version . '+json',
                 'Authorization' => 'Bearer ' . $this->token,
@@ -232,7 +234,7 @@ class Client
         $res = $this->query($path, $method);
 
         $data = json_decode($res->getBody()->__toString(), true);
-        
+
         $subAccountData = [
             'id' => $data['Id'],
             'appAccountId' => $data['AppAccountId'],
@@ -325,8 +327,8 @@ class Client
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id . '/rib/attachments';
         $method = 'POST';
 
-        $pathInfo = pathinfo($bankDetails->getClientFilename(), PATHINFO_FILENAME);
-        $filename = $bankAccount->iban . ' - ' . date('Y-m-d H:i:s') . '.' . $pathInfo;
+        $extension = pathinfo($bankDetails->getClientFilename(), PATHINFO_EXTENSION);
+        $filename = $bankAccount->iban . '.' . $extension;
 
         $options = [
             'multipart' => [
@@ -343,7 +345,51 @@ class Client
         $this->query($path, $method, null, 1, $options);
     }
 
-    public function retrieveKYCrequest(User $user) :KYC
+    /**
+     * @param User $user
+     * @param UploadedFileInterface[] $files
+     * @return KYC
+     */
+    public function createKYCRequest(User $user, iterable $files) :KYC
+    {
+        $path = '/users/' . $user->appUserId . '/kyc/';
+        $method = 'POST';
+
+        /**
+         * @var UploadedFileInterface $file
+         */
+        foreach ($files as $name => $file) {
+            $name = preg_replace('#[^a-zA-Z0-9]+#', '-', $name);
+            $extension = pathinfo($file->getClientFilename(), PATHINFO_EXTENSION);
+            $filename = $name . '.' . $extension;
+
+
+            $options['multipart'][] = [
+                'name' => $name,
+                'filename' => $filename,
+                'contents' => $file->getStream(),
+                'headers' => [
+                    'Content-Type' => $file->getClientMediaType(),
+                ],
+            ];
+        }
+
+        $res = $this->query($path, $method, null, 1, $options);
+
+        $data = json_decode($res->getBody()->__toString(), true);
+
+        $kycData = [
+            'id' => $data['Id'],
+            'requestDate' => $data['RequestDate'],
+            'status' => $data['Status'],
+            'reason' => $data['Reason'],
+        ];
+        $kyc = new KYC($kycData);
+
+        return $kyc;
+    }
+
+    public function retrieveKYCRequest(User $user) :KYC
     {
         $path = '/users/' . $user->appUserId . '/kyc/';
         $method = 'GET';
@@ -353,10 +399,10 @@ class Client
         $data = json_decode($res->getBody()->__toString(), true);
 
         $kycData = [
-            'id' => $data['Id'],
-            'requestDate' => $data['RequestDate'],
-            'status' => $data['Status'],
-            'reason' => $data['Reason'],
+            'id' => $data[0]['Id'],
+            'requestDate' => $data[0]['RequestDate'],
+            'status' => $data[0]['Status'],
+            'reason' => $data[0]['Reason'],
         ];
         $kyc = new KYC($kycData);
 
