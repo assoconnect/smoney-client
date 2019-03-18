@@ -38,6 +38,4 @@ class KYC extends User
      * @var int
      */
     public $status;
-
-
 }

@@ -7,6 +7,7 @@ use AssoConnect\SMoney\Exception\InvalidSignatureException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
 use AssoConnect\SMoney\Object\Company;
+use AssoConnect\SMoney\Object\KYC;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
@@ -264,7 +265,7 @@ class ClientTest extends TestCase
         $client->submitKYCAccountRequest($userPro, $bankAccount, $bankDetails);
     }
 
-    public function testCreateKYCrequest()
+    public function testCreateKYCRequestRetrieveKYCRequest()
     {
         $client = $this->createClient();
 
@@ -278,7 +279,7 @@ class ClientTest extends TestCase
         $stream2 = fopen($file2, 'r+');
         $filesize2 = filesize($file2);
 
-        $file1 = new UploadedFile($stream1, $filesize1, UPLOAD_ERR_OK, 'image2.jpg', 'image/jpg');
+        $file1 = new UploadedFile($stream1, $filesize1, UPLOAD_ERR_OK, 'image2.jpg', 'image/jpeg');
         $file2 = new UploadedFile($stream2, $filesize2, UPLOAD_ERR_OK, 'image2.png', 'image/png');
 
 
@@ -287,6 +288,10 @@ class ClientTest extends TestCase
             'id' => $file2,
         ];
 
-        $client->createKYCrequest($userPro, $files);
+        $kyc = $client->createKYCrequest($userPro, $files);
+
+        $this->assertSame(KYC::STATUS_PENDING, $kyc->status);
+
+        $this->assertSame($kyc->id, $client->retrieveKYCRequest($userPro)->id);
     }
 }

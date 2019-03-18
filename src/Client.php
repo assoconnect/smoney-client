@@ -73,7 +73,8 @@ class Client
         int $version = 1,
         $options = []
     ): ResponseInterface {
-        $options = array_merge_recursive([
+
+        $options = array_merge([
             'headers' => [
                 'Accept'        => 'application/vnd.s-money.v' . $version . '+json',
                 'Authorization' => 'Bearer ' . $this->token,
@@ -233,7 +234,7 @@ class Client
         $res = $this->query($path, $method);
 
         $data = json_decode($res->getBody()->__toString(), true);
-        
+
         $subAccountData = [
             'id' => $data['Id'],
             'appAccountId' => $data['AppAccountId'],
@@ -349,18 +350,21 @@ class Client
      * @param UploadedFileInterface[] $files
      * @return KYC
      */
-    public function createKYCrequest(User $user, iterable $files)
+    public function createKYCRequest(User $user, iterable $files) :KYC
     {
-        $path = '/users/' . $user->appUserId . '/kyc';
+        $path = '/users/' . $user->appUserId . '/kyc/';
         $method = 'POST';
-        $count = 0;
 
+        /**
+         * @var UploadedFileInterface $file
+         */
         foreach ($files as $name => $file) {
             $name = preg_replace('#[^a-zA-Z0-9]+#', '-', $name);
             $extension = pathinfo($file->getClientFilename(), PATHINFO_EXTENSION);
             $filename = $name . '.' . $extension;
 
-            $options['multipart'][$count] = [
+
+            $options['multipart'][] = [
                 'name' => $name,
                 'filename' => $filename,
                 'contents' => $file->getStream(),
@@ -368,8 +372,8 @@ class Client
                     'Content-Type' => $file->getClientMediaType(),
                 ],
             ];
-            $count++;
         }
+
         $res = $this->query($path, $method, null, 1, $options);
 
         $data = json_decode($res->getBody()->__toString(), true);
@@ -385,7 +389,7 @@ class Client
         return $kyc;
     }
 
-    public function retrieveKYCrequest(User $user) :KYC
+    public function retrieveKYCRequest(User $user) :KYC
     {
         $path = '/users/' . $user->appUserId . '/kyc/';
         $method = 'GET';
@@ -395,10 +399,10 @@ class Client
         $data = json_decode($res->getBody()->__toString(), true);
 
         $kycData = [
-            'id' => $data['Id'],
-            'requestDate' => $data['RequestDate'],
-            'status' => $data['Status'],
-            'reason' => $data['Reason'],
+            'id' => $data[0]['Id'],
+            'requestDate' => $data[0]['RequestDate'],
+            'status' => $data[0]['Status'],
+            'reason' => $data[0]['Reason'],
         ];
         $kyc = new KYC($kycData);
 
