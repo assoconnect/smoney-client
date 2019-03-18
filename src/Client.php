@@ -326,8 +326,8 @@ class Client
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id . '/rib/attachments';
         $method = 'POST';
 
-        $pathInfo = pathinfo($bankDetails->getClientFilename(), PATHINFO_FILENAME);
-        $filename = $bankAccount->iban . ' - ' . date('Y-m-d H:i:s') . '.' . $pathInfo;
+        $extension = pathinfo($bankDetails->getClientFilename(), PATHINFO_EXTENSION);
+        $filename = $bankAccount->iban . '.' . $extension;
 
         $options = [
             'multipart' => [
@@ -344,27 +344,29 @@ class Client
         $this->query($path, $method, null, 1, $options);
     }
 
-    public function createKYCrequest(User $user, array $files)
+    /**
+     * @param User $user
+     * @param UploadedFileInterface[] $files
+     * @return KYC
+     */
+    public function createKYCrequest(User $user, iterable $files)
     {
-        $path = '/users/' . $user->appUserId . '/kyc/';
+        $path = '/users/' . $user->appUserId . '/kyc';
         $method = 'POST';
         $count = 0;
 
-        /**
-         * @var UploadedFileInterface $file
-         */
         foreach ($files as $name => $file) {
             $name = preg_replace('#[^a-zA-Z0-9]+#', '-', $name);
-            $pathInfo = pathinfo($file->getClientFilename(), PATHINFO_FILENAME);
-            $filename = $name . ' - ' . date('Y-m-d H:i:s') . '.' . $pathInfo;
+            $extension = pathinfo($file->getClientFilename(), PATHINFO_EXTENSION);
+            $filename = $name . '.' . $extension;
 
             $options['multipart'][$count] = [
-                        'name' => $name,
-                        'filename' => $filename,
-                        'contents' => $file->getStream(),
-                        'headers' => [
-                            'Content-Type' => $file->getClientMediaType(),
-                    ],
+                'name' => $name,
+                'filename' => $filename,
+                'contents' => $file->getStream(),
+                'headers' => [
+                    'Content-Type' => $file->getClientMediaType(),
+                ],
             ];
             $count++;
         }
