@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace AssoConnect\SMoney;
 
 use AssoConnect\SMoney\Exception\InvalidSignatureException;
+use AssoConnect\SMoney\Exception\MissingAppUserIdException;
+use AssoConnect\SMoney\Exception\MissingIdException;
 use AssoConnect\SMoney\Exception\UserAgeException;
+use AssoConnect\SMoney\Exception\UserAlreadyExistsException;
 use AssoConnect\SMoney\Exception\UserCountryException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
@@ -16,7 +19,6 @@ use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\UploadedFile;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -97,13 +99,10 @@ class Client
 
     public function createUser(User $user): User
     {
-        if (in_array($user->profile->address->country, Address::COUNTRIES) === false) {
-            throw new UserCountryException('The User\'s country is not accepted by S-Money');
-        }
+        $this->checkUser($user);
 
-        $limitAge = new \DateTime('-18 years');
-        if ($user->profile->birthdate > $limitAge) {
-            throw new UserAgeException('The User must be over 18 years old');
+        if (empty($user->id) === false) {
+            throw new UserAlreadyExistsException('User must not have an S-Money id to be created');
         }
 
         $path = '/users';
@@ -143,13 +142,10 @@ class Client
 
     public function updateUser(User $user): User
     {
-        if (in_array($user->profile->address->country, Address::COUNTRIES) === false) {
-            throw new UserCountryException('The User\'s country is not accepted by S-Money');
-        }
+        $this->checkUser($user);
 
-        $limitAge = new \DateTime('-18 years');
-        if ($user->profile->birthdate > $limitAge) {
-            throw new UserAgeException('The User must be over 18 years old');
+        if (empty($user->id)) {
+            throw new MissingIdException('User must have an S-Money id to be updated');
         }
 
         $path = '/users/' . $user->appUserId;
@@ -172,6 +168,22 @@ class Client
 
         $this->query($path, $method, $data);
         return $user;
+    }
+
+    private function checkUser(User $user): void
+    {
+        if (in_array($user->profile->address->country, Address::COUNTRIES) === false) {
+            throw new UserCountryException('The User\'s country is not accepted by S-Money');
+        }
+
+        $limitAge = new \DateTime('-18 years');
+        if ($user->profile->birthdate > $limitAge) {
+            throw new UserAgeException('The User must be over 18 years old');
+        }
+
+        if (empty($user->appUserId)) {
+            throw new MissingAppUserIdException('User must have an appUserId');
+        }
     }
 
     public function getUser(string $appUserId): User
