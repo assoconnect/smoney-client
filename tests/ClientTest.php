@@ -4,6 +4,8 @@ namespace AssoConnect\Tests;
 
 use AssoConnect\SMoney\Client;
 use AssoConnect\SMoney\Exception\InvalidSignatureException;
+use AssoConnect\SMoney\Exception\UserAgeException;
+use AssoConnect\SMoney\Exception\UserCountryException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
 use AssoConnect\SMoney\Object\Company;
@@ -11,7 +13,6 @@ use AssoConnect\SMoney\Object\KYC;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\UploadedFile;
 use PHPUnit\Framework\TestCase;
@@ -147,7 +148,7 @@ class ClientTest extends TestCase
         $this->assertSame(json_encode($subAccount), json_encode($_subAccount));
     }
 
-    public function testCreateUserException()
+    public function testUserAgeException()
     {
         $client = $this->createClient();
         //Creating a user under 18 years old
@@ -172,7 +173,35 @@ class ClientTest extends TestCase
             ]),
         ]);
 
-        $this->expectException(ClientException::class);
+        $this->expectException(UserAgeException::class);
+        $client->createUser($user);
+    }
+
+    public function testUserCountryException()
+    {
+        $client = $this->createClient();
+        $birthdate = new \DateTime();
+        $birthdate->setDate(2000, 1, 1);
+        $birthdate->setTime(0, 0, 0, 0);
+
+        $user = new User([
+            'appUserId' => 'appuserid-' . uniqid(),
+            'profile' => new UserProfile([
+                'civility' => UserProfile::CIVILITY_MR,
+                'firstname' => 'Test',
+                'lastname' => 'McTestington',
+                'birthdate' => $birthdate,
+                'address' => new Address([
+                    'street' => 'rue du Test',
+                    'zipcode' => '75002',
+                    'city' => 'TestVille',
+                    'country' => 'XX',
+                ]),
+                'email' => 'test-' . uniqid() . '@test.com',
+            ]),
+        ]);
+
+        $this->expectException(UserCountryException::class);
         $client->createUser($user);
     }
 

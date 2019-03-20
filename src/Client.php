@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace AssoConnect\SMoney;
 
 use AssoConnect\SMoney\Exception\InvalidSignatureException;
+use AssoConnect\SMoney\Exception\UserAgeException;
+use AssoConnect\SMoney\Exception\UserCountryException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
 use AssoConnect\SMoney\Object\Company;
@@ -95,6 +97,15 @@ class Client
 
     public function createUser(User $user): User
     {
+        if (in_array($user->profile->address->country, Address::COUNTRIES) === false) {
+            throw new UserCountryException('The User\'s country is not accepted by S-Money');
+        }
+
+        $limitAge = new \DateTime('-18 years');
+        if ($user->profile->birthdate > $limitAge) {
+            throw new UserAgeException('The User must be over 18 years old');
+        }
+
         $path = '/users';
         $method = 'POST';
 
@@ -132,6 +143,15 @@ class Client
 
     public function updateUser(User $user): User
     {
+        if (in_array($user->profile->address->country, Address::COUNTRIES) === false) {
+            throw new UserCountryException('The User\'s country is not accepted by S-Money');
+        }
+
+        $limitAge = new \DateTime('-18 years');
+        if ($user->profile->birthdate > $limitAge) {
+            throw new UserAgeException('The User must be over 18 years old');
+        }
+
         $path = '/users/' . $user->appUserId;
         $method = 'PUT';
         $data = [
