@@ -4,6 +4,11 @@ namespace AssoConnect\Tests;
 
 use AssoConnect\SMoney\Client;
 use AssoConnect\SMoney\Exception\InvalidSignatureException;
+use AssoConnect\SMoney\Exception\MissingAppUserIdException;
+use AssoConnect\SMoney\Exception\MissingIdException;
+use AssoConnect\SMoney\Exception\UserAgeException;
+use AssoConnect\SMoney\Exception\UserAlreadyExistsException;
+use AssoConnect\SMoney\Exception\UserCountryException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
 use AssoConnect\SMoney\Object\Company;
@@ -11,7 +16,6 @@ use AssoConnect\SMoney\Object\KYC;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
-use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\UploadedFile;
 use PHPUnit\Framework\TestCase;
@@ -147,10 +151,11 @@ class ClientTest extends TestCase
         $this->assertSame(json_encode($subAccount), json_encode($_subAccount));
     }
 
-    public function testCreateUserException()
+    public function providerCreateUpdateUserException()
     {
-        $client = $this->createClient();
-        //Creating a user under 18 years old
+        $sets = [];
+
+        // User must be 18 years old
         $birthdate = new \DateTime();
         $birthdate->setDate(2014, 1, 1);
         $birthdate->setTime(0, 0, 0, 0);
@@ -171,9 +176,138 @@ class ClientTest extends TestCase
                 'email' => 'test-' . uniqid() . '@test.com',
             ]),
         ]);
+        $sets[] = [$user, UserAgeException::class];
 
-        $this->expectException(ClientException::class);
+        // User must live in the right country
+        $birthdate = new \DateTime();
+        $birthdate->setDate(2000, 1, 1);
+        $birthdate->setTime(0, 0, 0, 0);
+
+        $user = new User([
+            'appUserId' => 'appuserid-' . uniqid(),
+            'profile' => new UserProfile([
+                'civility' => UserProfile::CIVILITY_MR,
+                'firstname' => 'Test',
+                'lastname' => 'McTestington',
+                'birthdate' => $birthdate,
+                'address' => new Address([
+                    'street' => 'rue du Test',
+                    'zipcode' => '75002',
+                    'city' => 'TestVille',
+                    'country' => 'XX',
+                ]),
+                'email' => 'test-' . uniqid() . '@test.com',
+            ]),
+        ]);
+        $sets[] = [$user, UserCountryException::class];
+
+        // User must have an appUserId
+        $birthdate = new \DateTime();
+        $birthdate->setDate(2000, 1, 1);
+        $birthdate->setTime(0, 0, 0, 0);
+
+        $user = new User([
+            'appUserId' => '',
+            'profile' => new UserProfile([
+                'civility' => UserProfile::CIVILITY_MR,
+                'firstname' => 'Test',
+                'lastname' => 'McTestington',
+                'birthdate' => $birthdate,
+                'address' => new Address([
+                    'street' => 'rue du Test',
+                    'zipcode' => '75002',
+                    'city' => 'TestVille',
+                    'country' => 'FR',
+                ]),
+                'email' => 'test-' . uniqid() . '@test.com',
+            ]),
+        ]);
+        $sets[] = [$user, MissingAppUserIdException::class];
+
+        return $sets;
+    }
+
+    /**
+     * @dataProvider providerCreateUserException()
+     */
+    public function testCreateUserException(User $user, string $exception)
+    {
+        $client = $this->createClient();
+
+        $this->expectException($exception);
         $client->createUser($user);
+    }
+
+    public function providerCreateUserException()
+    {
+        $sets = $this->providerCreateUpdateUserException();
+
+        // User must not have an S-Money Id
+        $birthdate = new \DateTime();
+        $birthdate->setDate(2000, 1, 1);
+        $birthdate->setTime(0, 0, 0, 0);
+
+        $user = new User([
+            'id' => 123,
+            'appUserId' => 'appuserid-' . uniqid(),
+            'profile' => new UserProfile([
+                'civility' => UserProfile::CIVILITY_MR,
+                'firstname' => 'Test',
+                'lastname' => 'McTestington',
+                'birthdate' => $birthdate,
+                'address' => new Address([
+                    'street' => 'rue du Test',
+                    'zipcode' => '75002',
+                    'city' => 'TestVille',
+                    'country' => 'FR',
+                ]),
+                'email' => 'test-' . uniqid() . '@test.com',
+            ]),
+        ]);
+        $sets[] = [$user, UserAlreadyExistsException::class];
+
+        return $sets;
+    }
+
+    /**
+     * @dataProvider providerUpdateUserException()
+     */
+    public function testUpdateUserException(User $user, string $exception)
+    {
+        $client = $this->createClient();
+
+        $this->expectException($exception);
+        $client->updateUser($user);
+    }
+
+    public function providerUpdateUserException()
+    {
+        $sets = $this->providerCreateUpdateUserException();
+
+        // User must have an S-Money Id
+        $birthdate = new \DateTime();
+        $birthdate->setDate(2000, 1, 1);
+        $birthdate->setTime(0, 0, 0, 0);
+
+        $user = new User([
+            'appUserId' => 'appuserid-' . uniqid(),
+            'profile' => new UserProfile([
+                'civility' => UserProfile::CIVILITY_MR,
+                'firstname' => 'Test',
+                'lastname' => 'McTestington',
+                'birthdate' => $birthdate,
+                'address' => new Address([
+                    'street' => 'rue du Test',
+                    'zipcode' => '75002',
+                    'city' => 'TestVille',
+                    'country' => 'FR',
+                ]),
+                'email' => 'test-' . uniqid() . '@test.com',
+            ]),
+        ]);
+        $sets[] = [$user, MissingIdException::class];
+
+        return $sets;
     }
 
     public function testCreateGetUpdateDeleteBankAccount()
