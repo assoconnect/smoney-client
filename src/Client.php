@@ -6,6 +6,8 @@ namespace AssoConnect\SMoney;
 
 use AssoConnect\SMoney\Exception\InvalidSignatureException;
 use AssoConnect\SMoney\Exception\MissingAppUserIdException;
+use AssoConnect\SMoney\Exception\MissingBicException;
+use AssoConnect\SMoney\Exception\MissingIbanException;
 use AssoConnect\SMoney\Exception\MissingIdException;
 use AssoConnect\SMoney\Exception\UserAgeException;
 use AssoConnect\SMoney\Exception\UserAlreadyExistsException;
@@ -280,6 +282,14 @@ class Client
 
     public function createBankAccount(User $user, BankAccount $bankAccount) :BankAccount
     {
+        if ($bankAccount->iban === '' or $bankAccount->iban === null) {
+            throw new MissingIbanException('The BankAccount must have an IBAN');
+        }
+
+        if ($bankAccount->bic === '' or $bankAccount->bic === null) {
+            throw new MissingBicException('The BankAccount must have a BIC');
+        }
+
         $path = '/users/' . $user->appUserId . '/bankaccounts';
         $method = 'POST';
         $data = [

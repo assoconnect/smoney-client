@@ -5,6 +5,8 @@ namespace AssoConnect\Tests;
 use AssoConnect\SMoney\Client;
 use AssoConnect\SMoney\Exception\InvalidSignatureException;
 use AssoConnect\SMoney\Exception\MissingAppUserIdException;
+use AssoConnect\SMoney\Exception\MissingBicException;
+use AssoConnect\SMoney\Exception\MissingIbanException;
 use AssoConnect\SMoney\Exception\MissingIdException;
 use AssoConnect\SMoney\Exception\UserAgeException;
 use AssoConnect\SMoney\Exception\UserAlreadyExistsException;
@@ -89,7 +91,7 @@ class ClientTest extends TestCase
         }
     }
 
-    public function testCreateGetUpdate()
+    public function testCreateGetUpdate() :void
     {
         $client = $this->createClient();
         $birthdate = new \DateTime();
@@ -151,7 +153,7 @@ class ClientTest extends TestCase
         $this->assertSame(json_encode($subAccount), json_encode($_subAccount));
     }
 
-    public function providerCreateUpdateUserException()
+    public function providerCreateUpdateUserException() :iterable
     {
         $sets = [];
 
@@ -230,7 +232,7 @@ class ClientTest extends TestCase
     /**
      * @dataProvider providerCreateUserException()
      */
-    public function testCreateUserException(User $user, string $exception)
+    public function testCreateUserException(User $user, string $exception) :void
     {
         $client = $this->createClient();
 
@@ -238,7 +240,7 @@ class ClientTest extends TestCase
         $client->createUser($user);
     }
 
-    public function providerCreateUserException()
+    public function providerCreateUserException() :iterable
     {
         $sets = $this->providerCreateUpdateUserException();
 
@@ -272,7 +274,7 @@ class ClientTest extends TestCase
     /**
      * @dataProvider providerUpdateUserException()
      */
-    public function testUpdateUserException(User $user, string $exception)
+    public function testUpdateUserException(User $user, string $exception) :void
     {
         $client = $this->createClient();
 
@@ -280,7 +282,7 @@ class ClientTest extends TestCase
         $client->updateUser($user);
     }
 
-    public function providerUpdateUserException()
+    public function providerUpdateUserException() :iterable
     {
         $sets = $this->providerCreateUpdateUserException();
 
@@ -337,6 +339,64 @@ class ClientTest extends TestCase
 
         $this->assertTrue($client->DeleteBankAccount($user, $bankAccount));
         $this->assertNull($bankAccount->id);
+    }
+
+    /**
+     * @dataProvider providerCreateBankAccountException()
+     */
+    public function testCreateBankAccountException(BankAccount $bankAccount, string $exception) :void
+    {
+        $client = $this->createClient();
+
+        $user = $this->helperCreateUser($pro = true);
+
+        $this->expectException($exception);
+        $client->createBankAccount($user, $bankAccount);
+    }
+
+    public function providerCreateBankAccountException() :iterable
+    {
+        // Empty Iban
+        $params = [
+            'displayName' => 'bank account',
+            'bic' => 'CMCIFR2A',
+            'iban' => '',
+        ];
+        $bankAccount = new BankAccount($params);
+
+        $sets[] = [$bankAccount, MissingIbanException::class];
+
+        // Iban is null
+        $params = [
+            'displayName' => 'bank account',
+            'bic' => 'CMCIFR2A',
+            'iban' => null,
+        ];
+        $bankAccount = new BankAccount($params);
+
+        $sets[] = [$bankAccount, MissingIbanException::class];
+
+        // Empty Bic
+        $params = [
+            'displayName' => 'bank account',
+            'bic' => '',
+            'iban' => 'FR7610011000201234567890188',
+        ];
+        $bankAccount = new BankAccount($params);
+
+        $sets[] = [$bankAccount, MissingBicException::class];
+
+        // Bic is null
+        $params = [
+            'displayName' => 'bank account',
+            'bic' => null,
+            'iban' => 'FR7610011000201234567890188',
+        ];
+        $bankAccount = new BankAccount($params);
+
+        $sets[] = [$bankAccount, MissingBicException::class];
+
+        return $sets;
     }
 
     public function testVerifySignatureValid()
