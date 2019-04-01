@@ -411,6 +411,20 @@ class ClientTest extends TestCase
         $this->expectNotToPerformAssertions();
     }
 
+    public function testSignPayload()
+    {
+        $client = $this->createClient();
+
+        $table = [
+            'orderId' => '123456&',
+            'amount'  => '1020&',
+            ];
+        $body = $client->signPayload($table);
+
+        $this->assertTrue(isset($body['CallbackSignature']));
+    }
+
+
     public function testVerifySignatureInvalid()
     {
         $client = $this->createClient();
@@ -482,7 +496,7 @@ class ClientTest extends TestCase
             'id' => $file2,
         ];
 
-        $kyc = $client->createKYCrequest($userPro, $files);
+        $kyc = $client->submitKYCRequest($userPro, $files);
 
         $this->assertSame(KYC::STATUS_PENDING, $kyc->status);
 
