@@ -99,6 +99,11 @@ class Client
         return $this->client->request($method, $this->endpoint . $path, $options);
     }
 
+    /**
+     * Creating a S-Money User
+     * @param User $user
+     * @return User
+     */
     public function createUser(User $user): User
     {
         $this->checkUser($user);
@@ -142,6 +147,11 @@ class Client
         return $user;
     }
 
+    /**
+     * Updating the given S-Money User
+     * @param User $user
+     * @return User
+     */
     public function updateUser(User $user): User
     {
         $this->checkUser($user);
@@ -172,6 +182,10 @@ class Client
         return $user;
     }
 
+    /**
+     * Checking that the user object is valid according to S-Money validations
+     * @param User $user
+     */
     private function checkUser(User $user): void
     {
         if (in_array($user->profile->address->country, Address::COUNTRIES) === false) {
@@ -188,6 +202,11 @@ class Client
         }
     }
 
+    /**
+     * Retrieving the S-Money User info based on its appUserId
+     * @param string $appUserId
+     * @return User
+     */
     public function getUser(string $appUserId): User
     {
         $path = '/users/' . $appUserId;
@@ -234,6 +253,12 @@ class Client
         return $user;
     }
 
+    /**
+     * Creating a S-Money SubAccount linked to the given User
+     * @param User $user
+     * @param SubAccount $subAccount
+     * @return SubAccount
+     */
     public function createSubAccount(User $user, SubAccount $subAccount): SubAccount
     {
         $path = '/users/' . $user->appUserId . '/subaccounts';
@@ -249,6 +274,12 @@ class Client
         return $subAccount;
     }
 
+    /**
+     * Updating the S-Money SubAccount's display name
+     * @param User $user
+     * @param SubAccount $subAccount
+     * @return SubAccount
+     */
     public function updateSubAccount(User $user, SubAccount $subAccount): SubAccount
     {
         $path = '/users/' . $user->appUserId . '/subaccounts/' . $subAccount->appAccountId;
@@ -261,6 +292,12 @@ class Client
         return $subAccount;
     }
 
+    /**
+     * Retrieving the S-Money SubAccount info
+     * @param User $user
+     * @param string $appAccountId
+     * @return SubAccount
+     */
     public function getSubAccount(User $user, string $appAccountId): SubAccount
     {
         $path = '/users/' . $user->appUserId . '/subaccounts/' . $appAccountId;
@@ -280,6 +317,12 @@ class Client
         return $subAccount;
     }
 
+    /**
+     * Creating a S-Money BankAccount for the given User
+     * @param User $user
+     * @param BankAccount $bankAccount
+     * @return BankAccount
+     */
     public function createBankAccount(User $user, BankAccount $bankAccount) :BankAccount
     {
         if ($bankAccount->iban === '' or $bankAccount->iban === null) {
@@ -304,6 +347,12 @@ class Client
         return $bankAccount;
     }
 
+    /**
+     * Retrieving the BankAccount info
+     * @param User $user
+     * @param BankAccount $bankAccount
+     * @return BankAccount
+     */
     public function getBankAccount(user $user, BankAccount $bankAccount) :BankAccount
     {
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id;
@@ -323,6 +372,12 @@ class Client
         return $bankAccount;
     }
 
+    /**
+     * Updating the BankAccount display name based on it's id
+     * @param User $user
+     * @param BankAccount $bankAccount
+     * @return BankAccount
+     */
     public function updateBankAccount(User $user, BankAccount $bankAccount) :BankAccount
     {
         $path = '/users/' . $user->appUserId . '/bankaccounts/';
@@ -336,6 +391,12 @@ class Client
         return $bankAccount;
     }
 
+    /**
+     * Deleting the BankAccount in S-Money
+     * @param User $user
+     * @param BankAccount $bankAccount
+     * @return bool
+     */
     public function deleteBankAccount(User $user, BankAccount $bankAccount) :bool
     {
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id;
@@ -346,6 +407,10 @@ class Client
         return true;
     }
 
+    /**
+     * Checking S-Money Callback signature is valid
+     * @param MessageInterface $message
+     */
     public function verifySignature(MessageInterface $message)
     {
         parse_str($message->getBody()->__toString(), $body);
@@ -356,12 +421,36 @@ class Client
         $signature = $body['CallbackSignature'];
         unset($body['CallbackSignature']);
 
-        ksort($body);
-        $body[] = $this->signature;
-        $hash = implode('+', array_values($body));
-        if (sha1($hash) !== $signature) {
+        if ($this->makeCallbackSignature($body) !== $signature) {
             throw new InvalidSignatureException('Invalid signature');
         }
+    }
+
+    /**
+     * Making the S-Money Signature with the given table
+     * @param iterable $table
+     * @return string
+     */
+    private function makeCallbackSignature(iterable $table) :string
+    {
+        ksort($table);
+        $table[] = $this->signature;
+        $hash = implode('+', array_values($table));
+        $callbackSignature = sha1($hash);
+
+        return $callbackSignature;
+    }
+
+    /**
+     * Adding the S-Money signature to the given body
+     * @param iterable $body
+     * @return iterable
+     */
+    public function signPayload(iterable $body) :iterable
+    {
+        $body['CallbackSignature'] = $this->makeCallbackSignature($body);
+
+        return $body;
     }
 
     public function submitKYCAccountRequest(User $user, BankAccount $bankAccount, UploadedFileInterface $bankDetails)
@@ -388,11 +477,12 @@ class Client
     }
 
     /**
+     * Submiting KYC request to verify the given User
      * @param User $user
      * @param UploadedFileInterface[] $files
      * @return KYC
      */
-    public function createKYCRequest(User $user, iterable $files) :KYC
+    public function submitKYCRequest(User $user, iterable $files) :KYC
     {
         $path = '/users/' . $user->appUserId . '/kyc/';
         $method = 'POST';
@@ -431,6 +521,11 @@ class Client
         return $kyc;
     }
 
+    /**
+     * Retrieving KYC request's info
+     * @param User $user
+     * @return KYC
+     */
     public function retrieveKYCRequest(User $user) :KYC
     {
         $path = '/users/' . $user->appUserId . '/kyc/';
