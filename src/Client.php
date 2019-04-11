@@ -21,6 +21,7 @@ use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -413,7 +414,7 @@ class Client
      */
     public function verifySignature(MessageInterface $message)
     {
-        parse_str($message->getBody()->__toString(), $body);
+        $body = $message->getParsedBody();
 
         if (array_key_exists('CallbackSignature', $body) === false) {
             throw new InvalidSignatureException('Missing signature');

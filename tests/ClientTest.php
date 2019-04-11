@@ -19,6 +19,7 @@ use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\UploadedFile;
 use PHPUnit\Framework\TestCase;
 
@@ -403,10 +404,14 @@ class ClientTest extends TestCase
     {
         $client = $this->createClient();
 
-        $body = 'orderId=123456&amount=1020&CallbackSignature=814de6e4d24008b1764fe093026b5127cddbf6c2';
-        $request = new Request('POST', 'uri', [], $body, 1.1);
+        $body = [
+            'orderId' => 123456,
+            'amount' => 1020,
+            'CallbackSignature' => '814de6e4d24008b1764fe093026b5127cddbf6c2',
+        ];
+        $request = new ServerRequest('POST', 'uri');
 
-        $client->verifySignature($request);
+        $client->verifySignature($request->withParsedBody($body));
 
         $this->expectNotToPerformAssertions();
     }
@@ -429,24 +434,32 @@ class ClientTest extends TestCase
     {
         $client = $this->createClient();
 
-        $body = 'orderId=123456&amount=1020&CallbackSignature=invalid_signature';
-        $request = new Request('POST', 'uri', [], $body, 1.1);
+        $body = [
+            'orderId' => 123456,
+            'amount' => 1020,
+            'CallbackSignature' => 'invalid_signature',
+        ];
+        $request = new ServerRequest('POST', 'uri');
 
         $this->expectException(InvalidSignatureException::class);
         $this->expectExceptionMessage('Invalid signature');
-        $client->verifySignature($request);
+        $client->verifySignature($request->withParsedBody($body));
     }
 
     public function testVerifySignatureMissing()
     {
         $client = $this->createClient();
 
-        $body = 'orderId=123456&amount=1020';
-        $request = new Request('POST', 'uri', [], $body, 1.1);
+
+        $body = [
+            'orderId' => 123456,
+            'amount' => 1020,
+        ];
+        $request = new ServerRequest('POST', 'uri');
 
         $this->expectException(InvalidSignatureException::class);
         $this->expectExceptionMessage('Missing signature');
-        $client->verifySignature($request);
+        $client->verifySignature($request->withParsedBody($body));
     }
 
     public function testSubmitKYCAccountRequest()
