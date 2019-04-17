@@ -5,7 +5,11 @@ language: php
 
 php:
   - '7.2'
-  
+
+addons:
+  sonarcloud:
+    organization: "assoconnect"
+
 before_script:
   - composer self-update
   - composer install --no-interaction
@@ -15,6 +19,7 @@ before_script:
 script:
   - vendor/bin/phpunit --coverage-clover ./tests/logs/clover.xml
   - php phpcs.phar --standard=PSR12 --ignore=/vendor/* ./
+  - sonar-scanner
 
 after_script:
   - vendor/bin/php-coveralls -v
