@@ -19,6 +19,7 @@ before_script:
 script:
   - vendor/bin/phpunit --coverage-clover ./tests/logs/clover.xml
   - php phpcs.phar --standard=PSR12 --ignore=/vendor/* ./
+  - ls -al ./tests/logs/
   - sonar-scanner
 
 after_script:
