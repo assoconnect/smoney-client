@@ -462,7 +462,7 @@ class ClientTest extends TestCase
         $client->verifySignature($request->withParsedBody($body));
     }
 
-    public function testSubmitKYCAccountRequest()
+    public function testSubmitBankAccountDetails()
     {
         $client = $this->createClient();
 

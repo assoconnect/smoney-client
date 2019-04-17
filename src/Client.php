@@ -454,7 +454,13 @@ class Client
         return $body;
     }
 
-    public function submitKYCAccountRequest(User $user, BankAccount $bankAccount, UploadedFileInterface $bankDetails)
+    /**
+     * Send bank details for a bank account
+     * @param User $user
+     * @param BankAccount $bankAccount
+     * @param UploadedFileInterface $bankDetails
+     */
+    public function submitBankAccountDetails(User $user, BankAccount $bankAccount, UploadedFileInterface $bankDetails)
     {
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id . '/rib/attachments';
         $method = 'POST';
