@@ -20,9 +20,7 @@ This package can be installed with composer
 
 ## Usage
 
-````
-<?php
-
+````php
 $guzzle = GuzzleHttp\Client();
 $client = new AssoConnect\SMoney\Client('YOUR S-MONEY ENDPOINT', 'YOUR S-MONEY TOKEN', $guzzle);
 
