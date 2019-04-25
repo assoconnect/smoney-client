@@ -480,7 +480,8 @@ class Client
                 ],
             ],
         ];
-        $this->query($path, $method, null, 1, $options);
+        $res = $this->query($path, $method, null, 1, $options);
+        return ($res->getStatusCode() === 201);
     }
 
     /**

@@ -483,7 +483,7 @@ class ClientTest extends TestCase
         $bankDetails = new UploadedFile($stream, $filesize, UPLOAD_ERR_OK, 'sample.pdf', 'application/pdf');
 
         $this->markTestSkipped('S-Money validates new account and thus prevents to submit a KYC request');
-        $client->submitKYCAccountRequest($userPro, $bankAccount, $bankDetails);
+        $client->submitBankAccountDetails($userPro, $bankAccount, $bankDetails);
     }
 
     public function testCreateKYCRequestRetrieveKYCRequest()
