@@ -531,9 +531,9 @@ class Client
     /**
      * Retrieving KYC request's info
      * @param User $user
-     * @return KYC
+     * @return iterable
      */
-    public function retrieveKYCRequest(User $user) :KYC
+    public function retrieveKYCRequest(User $user): iterable
     {
         $path = '/users/' . $user->appUserId . '/kyc/';
         $method = 'GET';
@@ -542,14 +542,17 @@ class Client
 
         $data = json_decode($res->getBody()->__toString(), true);
 
-        $kycData = [
-            'id' => $data[0]['Id'],
-            'requestDate' => $data[0]['RequestDate'],
-            'status' => $data[0]['Status'],
-            'reason' => $data[0]['Reason'],
-        ];
-        $kyc = new KYC($kycData);
+        $kycs = [];
+        foreach ($data as $item) {
+            $kycData = [
+                'id' => $item['Id'],
+                'requestDate' => $item['RequestDate'],
+                'status' => $item['Status'],
+                'reason' => $item['Reason'],
+            ];
+            $kycs[] = new KYC($kycData);
+        }
 
-        return $kyc;
+        return $kycs;
     }
 }

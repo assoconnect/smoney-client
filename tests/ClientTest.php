@@ -503,16 +503,18 @@ class ClientTest extends TestCase
         $file1 = new UploadedFile($stream1, $filesize1, UPLOAD_ERR_OK, 'image2.jpg', 'image/jpeg');
         $file2 = new UploadedFile($stream2, $filesize2, UPLOAD_ERR_OK, 'image2.png', 'image/png');
 
-
         $files = [
             'address' => $file1,
             'id' => $file2,
         ];
 
         $kyc = $client->submitKYCRequest($userPro, $files);
-
         $this->assertSame(KYC::STATUS_PENDING, $kyc->status);
 
-        $this->assertSame($kyc->id, $client->retrieveKYCRequest($userPro)->id);
+        $kycRequests    = $client->retrieveKYCRequest($userPro);
+        $this->assertEquals(1, count($kycRequests));
+        $lastKyc        = array_pop($kycRequests);
+        $this->assertSame($kyc->id, $lastKyc->id);
+
     }
 }
