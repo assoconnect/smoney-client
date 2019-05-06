@@ -515,6 +515,5 @@ class ClientTest extends TestCase
         $this->assertEquals(1, count($kycRequests));
         $lastKyc        = array_pop($kycRequests);
         $this->assertSame($kyc->id, $lastKyc->id);
-
     }
 }
