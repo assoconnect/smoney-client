@@ -16,6 +16,7 @@ use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
 use AssoConnect\SMoney\Object\Company;
 use AssoConnect\SMoney\Object\KYC;
+use AssoConnect\SMoney\Object\MoneyInTransfer;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
@@ -555,5 +556,75 @@ class Client
         }
 
         return $kycs;
+    }
+
+    /**
+     * Creating a S-Money MoneyInTransfer reference for the given User
+     * @param User $user
+     * @param MoneyInTransfer $MoneyInTransferReference
+     * @return MoneyInTransfer
+     */
+    public function createMoneyInTransferReference(User $user, MoneyInTransfer $MoneyInTransferReference) :MoneyInTransfer
+    {
+        $path = '/users/' . $user->appUserId . '/banktransferreferences';
+        $method = 'POST';
+        $data = [
+            'beneficiary' =>
+                ['appaccountid' => $user->appUserId],
+            'isMine' => true,
+        ];
+        $res = $this->query($path, $method, $data);
+        $data = json_decode($res->getBody()->__toString(), true);
+        $MoneyInTransferReference->id = $data['Id'];
+        return $MoneyInTransferReference;
+    }
+
+    /**
+     * Retrieve one particular reference
+     * @param User $user
+     * @param  $id
+     * @return MoneyInTransfer
+     */
+    public function getMoneyInTransferReference($user, $id): MoneyInTransfer
+    {
+        $path = '/users/' . $user->appUserId . '/banktransferreferences/' . $id;
+        $method = 'GET';
+
+        $res = $this->query($path, $method);
+        $data = json_decode($res->getBody()->__toString(), true);
+
+        $moneyInReferenceData = [
+            'id' => $data['Id'],
+        ];
+
+        $moneyIn = new MoneyInTransfer($moneyInReferenceData);
+
+        return $moneyIn;
+    }
+
+    /**
+     * Retrieve one particular reference
+     * @param User $user
+     * @param  $id
+     * @return MoneyInTransfer
+     */
+    public function getMoneyInTransfer($user, $id): MoneyInTransfer
+    {
+        $path = '/users/' . $user->appUserId . '/payins/banktransfers/' . $id;
+
+        $method = 'GET';
+
+        $res = $this->query($path, $method);
+        $data = json_decode($res->getBody()->__toString(), true);
+
+        $moneyInData = [
+            'id' => $data['Id'],
+            'amount' => $data['Amount'],
+            'status' => $data['Status'],
+        ];
+
+        $moneyIn = new MoneyInTransfer($moneyInData);
+
+        return $moneyIn;
     }
 }

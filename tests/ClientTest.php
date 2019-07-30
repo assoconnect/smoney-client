@@ -15,6 +15,7 @@ use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
 use AssoConnect\SMoney\Object\Company;
 use AssoConnect\SMoney\Object\KYC;
+use AssoConnect\SMoney\Object\MoneyInTransfer;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
@@ -515,5 +516,20 @@ class ClientTest extends TestCase
         $this->assertEquals(1, count($kycRequests));
         $lastKyc        = array_pop($kycRequests);
         $this->assertSame($kyc->id, $lastKyc->id);
+    }
+
+    public function testGetMoneyInTransfer()
+    {
+        $user = $this->helperCreateUser($pro = true);
+        $params = [
+            'amount' => null,
+        ];
+        $moneyInTransfer = new MoneyInTransfer($params);
+
+        $client = $this->createClient();
+        $moneyInTransfer = $client->createMoneyInTransferReference($user, $moneyInTransfer);
+
+        $this->assertNotNull($moneyInTransfer->id);
+        $this->assertSame(json_encode($moneyInTransfer), json_encode($client->getMoneyInTransferReference($user, $moneyInTransfer->id)));
     }
 }
