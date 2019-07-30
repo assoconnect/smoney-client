@@ -604,12 +604,13 @@ class Client
 
     /**
      * Retrieve one particular reference
-     * @param User $user
+     * @param  $appUserId
      * @param  $id
      * @return MoneyInTransfer
      */
-    public function getMoneyInTransfer($user, $id): MoneyInTransfer
+    public function getMoneyInTransfer($appUserId, $id): MoneyInTransfer
     {
+        $user = $this->getUser($appUserId);
         $path = '/users/' . $user->appUserId . '/payins/banktransfers/' . $id;
 
         $method = 'GET';
