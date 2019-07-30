@@ -621,6 +621,9 @@ class Client
         $moneyInData = [
             'id' => $data['Id'],
             'amount' => $data['Amount'],
+            'beneficiaryId' => $data['Beneficiary']['Id'],
+            'beneficiaryIdAppAccountId' => $data['Beneficiary']['AppaccountId'],
+            'beneficiaryDisplayName' => $data['Beneficiary']['Displayname'],
             'status' => $data['Status'],
         ];
 
