@@ -53,7 +53,7 @@ class Client
     /**
      * S-Money signature
      *
-     * @var String
+     * @var string
      */
     protected $signature;
 
@@ -608,7 +608,7 @@ class Client
      *
      * @codeCoverageIgnore
      */
-    public function getMoneyInTransfer(String $appUserId, int $id): MoneyInTransfer
+    public function getMoneyInTransfer(string $appUserId, int $id): MoneyInTransfer
     {
         $user = $this->getUser($appUserId);
         $path = '/users/' . $user->appUserId . '/payins/banktransfers/' . $id;
