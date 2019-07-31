@@ -517,22 +517,4 @@ class ClientTest extends TestCase
         $lastKyc        = array_pop($kycRequests);
         $this->assertSame($kyc->id, $lastKyc->id);
     }
-
-    public function testGetMoneyInTransfer()
-    {
-        $user = $this->helperCreateUser($pro = true);
-        $params = [
-            'amount' => null,
-        ];
-        $moneyInTransfer = new MoneyInTransfer($params);
-
-        $client = $this->createClient();
-        $moneyInTransfer = $client->createMoneyInTransferReference($user, $moneyInTransfer);
-
-        $this->assertNotNull($moneyInTransfer->id);
-        $this->assertSame(
-            json_encode($moneyInTransfer),
-            json_encode($client->getMoneyInTransferReference($user, $moneyInTransfer->id))
-        );
-    }
 }

@@ -559,50 +559,6 @@ class Client
     }
 
     /**
-     * Creating a S-Money MoneyInTransfer for the given User and MoneyTransferReference
-     * @param User $user
-     * @param MoneyInTransfer $MoneyInTransferReference
-     * @return MoneyInTransfer
-     */
-    public function createMoneyInTransferReference(
-        User $user,
-        MoneyInTransfer $MoneyInTransferReference
-    ): MoneyInTransfer {
-        $path = '/users/' . $user->appUserId . '/banktransferreferences';
-        $method = 'POST';
-        $data = [
-            'beneficiary' =>
-                ['appaccountid' => $user->appUserId],
-            'isMine' => true,
-        ];
-        $res = $this->query($path, $method, $data);
-        $data = json_decode($res->getBody()->__toString(), true);
-        $MoneyInTransferReference->id = $data['Id'];
-        return $MoneyInTransferReference;
-    }
-
-    /**
-     * Retrieve one particular reference
-     * @param User $user
-     * @param  $id
-     * @return MoneyInTransfer
-     */
-    public function getMoneyInTransferReference(User $user, int $id): MoneyInTransfer
-    {
-        $path = '/users/' . $user->appUserId . '/banktransferreferences/' . $id;
-        $method = 'GET';
-
-        $res = $this->query($path, $method);
-        $data = json_decode($res->getBody()->__toString(), true);
-
-        $moneyInReferenceData = [
-            'id' => $data['Id'],
-        ];
-
-        return new MoneyInTransfer($moneyInReferenceData);
-    }
-
-    /**
      * Retrieve one particular reference
      * @param  string $appUserId
      * @param  $id
