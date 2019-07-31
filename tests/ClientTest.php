@@ -530,6 +530,9 @@ class ClientTest extends TestCase
         $moneyInTransfer = $client->createMoneyInTransferReference($user, $moneyInTransfer);
 
         $this->assertNotNull($moneyInTransfer->id);
-        $this->assertSame(json_encode($moneyInTransfer), json_encode($client->getMoneyInTransferReference($user, $moneyInTransfer->id)));
+        $this->assertSame(
+            json_encode($moneyInTransfer),
+            json_encode($client->getMoneyInTransferReference($user, $moneyInTransfer->id))
+        );
     }
 }
