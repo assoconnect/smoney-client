@@ -585,7 +585,7 @@ class Client
      * @param  $id
      * @return MoneyInTransfer
      */
-    public function getMoneyInTransferReference($user, $id): MoneyInTransfer
+    public function getMoneyInTransferReference(User $user, int $id): MoneyInTransfer
     {
         $path = '/users/' . $user->appUserId . '/banktransferreferences/' . $id;
         $method = 'GET';
@@ -597,18 +597,18 @@ class Client
             'id' => $data['Id'],
         ];
 
-        $moneyIn = new MoneyInTransfer($moneyInReferenceData);
-
-        return $moneyIn;
+        return new MoneyInTransfer($moneyInReferenceData);
     }
 
     /**
      * Retrieve one particular reference
-     * @param  $appUserId
+     * @param  string $appUserId
      * @param  $id
      * @return MoneyInTransfer
+     *
+     * @codeCoverageIgnore
      */
-    public function getMoneyInTransfer($appUserId, $id): MoneyInTransfer
+    public function getMoneyInTransfer(String $appUserId, int $id): MoneyInTransfer
     {
         $user = $this->getUser($appUserId);
         $path = '/users/' . $user->appUserId . '/payins/banktransfers/' . $id;
@@ -617,18 +617,16 @@ class Client
 
         $res = $this->query($path, $method);
         $data = json_decode($res->getBody()->__toString(), true);
-
+        $beneficiary = $data['Beneficiary'];
         $moneyInData = [
             'id' => $data['Id'],
             'amount' => $data['Amount'],
-            'beneficiaryId' => $data['Beneficiary']['Id'],
-            'beneficiaryIdAppAccountId' => $data['Beneficiary']['AppaccountId'],
-            'beneficiaryDisplayName' => $data['Beneficiary']['Displayname'],
+            'beneficiaryId' => $beneficiary['Id'],
+            'beneficiaryIdAppAccountId' => $beneficiary['AppaccountId'],
+            'beneficiaryDisplayName' => $beneficiary['Displayname'],
             'status' => $data['Status'],
         ];
 
-        $moneyIn = new MoneyInTransfer($moneyInData);
-
-        return $moneyIn;
+        return new MoneyInTransfer($moneyInData);
     }
 }
