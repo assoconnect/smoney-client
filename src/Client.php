@@ -559,13 +559,15 @@ class Client
     }
 
     /**
-     * Creating a S-Money MoneyInTransfer reference for the given User
+     * Creating a S-Money MoneyInTransfer for the given User and MoneyTransferReference
      * @param User $user
      * @param MoneyInTransfer $MoneyInTransferReference
      * @return MoneyInTransfer
      */
-    public function createMoneyInTransferReference(User $user, MoneyInTransfer $MoneyInTransferReference) :MoneyInTransfer
-    {
+    public function createMoneyInTransferReference(
+        User $user,
+        MoneyInTransfer $MoneyInTransferReference
+    ): MoneyInTransfer {
         $path = '/users/' . $user->appUserId . '/banktransferreferences';
         $method = 'POST';
         $data = [
