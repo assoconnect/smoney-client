@@ -466,7 +466,11 @@ class Client
      * Sandbox default value for KYC is valid, we can't test KYC validation
      * @codeCoverageIgnore
      */
-    public function submitBankAccountDetails(User $user, BankAccount $bankAccount, UploadedFileInterface $bankDetails): bool
+    public function submitBankAccountDetails(
+        User $user,
+        BankAccount $bankAccount, 
+        UploadedFileInterface $bankDetails
+    ): bool
     {
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id . '/rib/attachments';
         $method = 'POST';
