@@ -468,10 +468,9 @@ class Client
      */
     public function submitBankAccountDetails(
         User $user,
-        BankAccount $bankAccount, 
+        BankAccount $bankAccount,
         UploadedFileInterface $bankDetails
-    ): bool
-    {
+    ): bool {
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id . '/rib/attachments';
         $method = 'POST';
 
