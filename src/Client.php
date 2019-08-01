@@ -460,8 +460,12 @@ class Client
      * @param User $user
      * @param BankAccount $bankAccount
      * @param UploadedFileInterface $bankDetails
+     * @return bool
+     *
+     * Sandbox default value for KYC is valid, we can't test KYC validation
+     * @codeCoverageIgnore
      */
-    public function submitBankAccountDetails(User $user, BankAccount $bankAccount, UploadedFileInterface $bankDetails)
+    public function submitBankAccountDetails(User $user, BankAccount $bankAccount, UploadedFileInterface $bankDetails): bool
     {
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id . '/rib/attachments';
         $method = 'POST';
@@ -559,11 +563,12 @@ class Client
     }
 
     /**
-     * Retrieve one particular reference
+     * Retrieve one particular transfer
      * @param  string $appUserId
      * @param  $id
      * @return MoneyInTransfer
      *
+     * We can't create/simulate transfer on Smoney sandbox
      * @codeCoverageIgnore
      */
     public function getMoneyInTransfer(
