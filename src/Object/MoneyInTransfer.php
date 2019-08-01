@@ -33,23 +33,9 @@ class MoneyInTransfer extends AbstractHydratable
     public $status;
 
     /**
-     * MoneyIn beneficiaryId
+     * Beneficiary information
      *
-     * @var int
+     * @var Beneficiary
      */
-    public $beneficiaryId;
-
-    /**
-     * MoneyIn beneficiary AppaccountId
-     *
-     * @var int
-     */
-    public $beneficiaryIdAppAccountId;
-
-    /**
-     * MoneyIn beneficiary DisplayName
-     *
-     * @var string
-     */
-    public $beneficiaryDisplayName;
+    public $beneficiary;
 }

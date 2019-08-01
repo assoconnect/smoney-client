@@ -14,6 +14,7 @@ use AssoConnect\SMoney\Exception\UserAlreadyExistsException;
 use AssoConnect\SMoney\Exception\UserCountryException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
+use AssoConnect\SMoney\Object\Beneficiary;
 use AssoConnect\SMoney\Object\Company;
 use AssoConnect\SMoney\Object\KYC;
 use AssoConnect\SMoney\Object\MoneyInTransfer;
@@ -577,18 +578,21 @@ class Client
     ): MoneyInTransfer {
         $user = $this->getUser($appUserId);
         $path = '/users/' . $user->appUserId . '/payins/banktransfers/' . $id;
-
         $method = 'GET';
 
         $res = $this->query($path, $method);
         $data = json_decode($res->getBody()->__toString(), true);
-        $beneficiary = $data['Beneficiary'];
+
+        $beneficiaryData = [
+            'id' => $data['Beneficiary']['Id'],
+            'appAccountId' => $data['Beneficiary']['AppaccountId'],
+            'displayName' => $data['Beneficiary']['Displayname'],
+        ];
+
         $moneyInData = [
             'id' => $data['Id'],
             'amount' => $data['Amount'],
-            'beneficiaryId' => $beneficiary['Id'],
-            'beneficiaryIdAppAccountId' => $beneficiary['AppaccountId'],
-            'beneficiaryDisplayName' => $beneficiary['Displayname'],
+            'beneficiary' => new Beneficiary($beneficiaryData),
             'status' => $data['Status'],
         ];
 
