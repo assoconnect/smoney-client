@@ -13,6 +13,8 @@ use AssoConnect\SMoney\Exception\UserAlreadyExistsException;
 use AssoConnect\SMoney\Exception\UserCountryException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
+use AssoConnect\SMoney\Object\CardPayment;
+use AssoConnect\SMoney\Object\CardSubPayment;
 use AssoConnect\SMoney\Object\Company;
 use AssoConnect\SMoney\Object\KYC;
 use AssoConnect\SMoney\Object\MoneyInTransfer;
@@ -516,5 +518,56 @@ class ClientTest extends TestCase
         $this->assertEquals(1, count($kycRequests));
         $lastKyc        = array_pop($kycRequests);
         $this->assertSame($kyc->id, $lastKyc->id);
+    }
+
+    public function testCreateRetrieveCardPayment()
+    {
+        $client = $this->createClient();
+
+        $user = $this->helperCreateUser(true);
+
+        $subAccount = new SubAccount([
+            'appAccountId' => uniqid(),
+        ]);
+
+        $subAccount = $client->createSubAccount($user, $subAccount);
+        $this->assertNotNull($subAccount->id);
+
+        $params = [
+            'orderId' => 'test1' . uniqid(),
+            'beneficiary' => ['appaccountid' => $subAccount->appAccountId],
+            'amount' => 200,
+        ];
+        $cardSubPayment1 = new CardSubPayment($params);
+
+        $params = [
+            'orderId' => 'test2'  . uniqid(),
+            'beneficiary' => ['appaccountid' => $subAccount->appAccountId],
+            'amount' => 300,
+        ];
+        $cardSubPayment2 = new CardSubPayment($params);
+
+        $params = [
+            'orderId' => 'testA' . uniqid(),
+            'isMine' => false,
+            'cardSubPayments' => [$cardSubPayment1, $cardSubPayment2],
+            'require3DS' => true,
+            'urlReturn' => 'http://test.com/returnurl/',
+            'amount' => 500,
+        ];
+
+        $cardPayment = new CardPayment($params);
+
+        $client->createCardPayment($cardPayment);
+        $this->assertNotNull($cardPayment->id);
+
+        $this->assertSame($cardPayment->id, $client->retrieveCardPayment($cardPayment)->id);
+        $this->assertSame($cardPayment->amount, $client->retrieveCardPayment($cardPayment)->amount);
+
+        $subPayment1 = $client->retrieveCardSubPayment($cardPayment, $cardSubPayment1);
+        $this->assertNotNull($subPayment1->id);
+
+        $subPayment2 = $client->retrieveCardSubPayment($cardPayment, $cardSubPayment2);
+        $this->assertSame($subPayment2->amount, $cardSubPayment2->amount);
     }
 }

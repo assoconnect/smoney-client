@@ -15,6 +15,8 @@ use AssoConnect\SMoney\Exception\UserCountryException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
 use AssoConnect\SMoney\Object\Beneficiary;
+use AssoConnect\SMoney\Object\CardPayment;
+use AssoConnect\SMoney\Object\CardSubPayment;
 use AssoConnect\SMoney\Object\Company;
 use AssoConnect\SMoney\Object\KYC;
 use AssoConnect\SMoney\Object\MoneyInTransfer;
@@ -600,5 +602,104 @@ class Client
         ];
 
         return new MoneyInTransfer($moneyInData);
+    }
+
+    
+    /**
+     * Creating card payment
+     * @param $cardPayment
+     * @return CardPayment
+     */
+    public function createCardPayment($cardPayment) :CardPayment
+    {
+        $path = '/payins/cardpayments';
+        $method = 'POST';
+
+        $subPaymentsTable = [];
+
+        if ($carSubPayments = $cardPayment->cardSubPayments) {
+            foreach ($carSubPayments as $cardSubPayment) {
+                $subPaymentsTable[] =  [
+                    'orderId' => $cardSubPayment->orderId,
+                    'beneficiary' => [
+                        'appaccountid' => $cardSubPayment->beneficiary['appaccountid'],
+                    ],
+                    'amount' => $cardSubPayment->amount,
+                ];
+            }
+        }
+
+        $data = [
+            'orderId' => $cardPayment->orderId,
+            'isMine' => $cardPayment->isMine,
+            'Require3DS' => $cardPayment->require3DS,
+            'payments' =>
+                $subPaymentsTable,
+            'urlReturn' => $cardPayment->urlReturn,
+            'urlCallback' => $cardPayment->urlCallback,
+            'amount' => $cardPayment->amount,
+        ];
+        $res = $this->query($path, $method, $data, 2);
+
+
+        $data = json_decode($res->getBody()->__toString(), true);
+        $cardPayment->id = $data['Id'];
+        $cardPayment->status = $data['Status'];
+
+        return $cardPayment;
+    }
+
+    /**
+     * Retrieving card payment's info
+     * @param CardPayment $cardPayment
+     */
+    public function retrieveCardPayment(CardPayment $cardPayment) :CardPayment
+    {
+        $path = '/payins/cardpayments/' . $cardPayment->orderId;
+        $method = 'GET';
+
+        $res = $this->query($path, $method);
+
+        $cardPayment = json_decode($res->getBody()->__toString(), true);
+        var_dump($cardPayment);
+
+        $properties = [
+            'id'     => $cardPayment['Id'],
+            'status' => $cardPayment['Status'],
+            'type'   => $cardPayment['Type'],
+            'amount' => $cardPayment['Amount'],
+            'extraResults' => $cardPayment['ExtraResults'],
+
+        ];
+        $cardPayment = new CardPayment($properties);
+
+        return $cardPayment;
+    }
+
+    /**
+     * Retrieving Card sub payment's info
+     * @param CardPayment $cardPayment
+     * @param CardSubPayment $cardSubPayment
+     * @return CardSubPayment
+     */
+    public function retrieveCardSubPayment($cardPayment, $cardSubPayment) :CardSubPayment
+    {
+        $path = '/payins/cardpayments/' . $cardPayment->orderId . '/payments/' . $cardSubPayment->orderId;
+        $method = 'GET';
+
+        $res = $this->query($path, $method);
+
+        $cardSubPayment = json_decode($res->getBody()->__toString(), true);
+
+        $properties = [
+            'id'        => $cardSubPayment['Id'],
+            'status'    => $cardSubPayment['Status'],
+            'amount'    => $cardSubPayment['Amount'],
+            'card'      => $cardSubPayment['Card'],
+            'extraResults' => $cardSubPayment['ExtraResults'],
+        ];
+        $cardSubPayment = new CardSubPayment($properties);
+
+        return $cardSubPayment;
     }
 }
