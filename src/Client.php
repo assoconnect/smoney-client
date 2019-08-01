@@ -14,8 +14,10 @@ use AssoConnect\SMoney\Exception\UserAlreadyExistsException;
 use AssoConnect\SMoney\Exception\UserCountryException;
 use AssoConnect\SMoney\Object\Address;
 use AssoConnect\SMoney\Object\BankAccount;
+use AssoConnect\SMoney\Object\Beneficiary;
 use AssoConnect\SMoney\Object\Company;
 use AssoConnect\SMoney\Object\KYC;
+use AssoConnect\SMoney\Object\MoneyInTransfer;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
@@ -52,7 +54,7 @@ class Client
     /**
      * S-Money signature
      *
-     * @var String
+     * @var string
      */
     protected $signature;
 
@@ -459,9 +461,16 @@ class Client
      * @param User $user
      * @param BankAccount $bankAccount
      * @param UploadedFileInterface $bankDetails
+     * @return bool
+     *
+     * Sandbox default value for KYC is valid, we can't test KYC validation
+     * @codeCoverageIgnore
      */
-    public function submitBankAccountDetails(User $user, BankAccount $bankAccount, UploadedFileInterface $bankDetails)
-    {
+    public function submitBankAccountDetails(
+        User $user,
+        BankAccount $bankAccount,
+        UploadedFileInterface $bankDetails
+    ): bool {
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id . '/rib/attachments';
         $method = 'POST';
 
@@ -555,5 +564,41 @@ class Client
         }
 
         return $kycs;
+    }
+
+    /**
+     * Retrieve one particular transfer
+     * @param  string $appUserId
+     * @param  $id
+     * @return MoneyInTransfer
+     *
+     * We can't create/simulate transfer on Smoney sandbox
+     * @codeCoverageIgnore
+     */
+    public function getMoneyInTransfer(
+        string $appUserId,
+        int $id
+    ): MoneyInTransfer {
+        $user = $this->getUser($appUserId);
+        $path = '/users/' . $user->appUserId . '/payins/banktransfers/' . $id;
+        $method = 'GET';
+
+        $res = $this->query($path, $method);
+        $data = json_decode($res->getBody()->__toString(), true);
+
+        $beneficiaryData = [
+            'id' => $data['Beneficiary']['Id'],
+            'appAccountId' => $data['Beneficiary']['AppaccountId'],
+            'displayName' => $data['Beneficiary']['Displayname'],
+        ];
+
+        $moneyInData = [
+            'id' => $data['Id'],
+            'amount' => $data['Amount'],
+            'beneficiary' => new Beneficiary($beneficiaryData),
+            'status' => $data['Status'],
+        ];
+
+        return new MoneyInTransfer($moneyInData);
     }
 }
