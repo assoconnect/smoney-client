@@ -7,6 +7,10 @@ addons:
   sonarcloud:
     organization: "assoconnect"
 
+cache:
+    directories:
+        - $HOME/.composer/cache
+
 before_script:
   - composer self-update
   - composer install --no-interaction
