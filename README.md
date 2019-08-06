@@ -2,7 +2,6 @@
 PHP client for [S-Money API](http://api.s-money.fr/documentation/).
 
 [![Build Status](https://travis-ci.org/assoconnect/smoney-client.svg?branch=master)](https://travis-ci.org/assoconnect/smoney-client)
-[![Coverage Status](https://coveralls.io/repos/github/assoconnect/smoney-client/badge.svg?branch=master)](https://coveralls.io/github/assoconnect/smoney-client?branch=master)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=assoconnect_smoney-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=assoconnect_smoney-client)
 
 The following features of the S-Money API are implemented:
