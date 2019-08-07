@@ -661,7 +661,6 @@ class Client
         $res = $this->query($path, $method);
 
         $cardPayment = json_decode($res->getBody()->__toString(), true);
-        var_dump($cardPayment);
 
         $properties = [
             'id'     => $cardPayment['Id'],
