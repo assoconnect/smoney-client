@@ -579,10 +579,9 @@ class Client
      */
     public function getMoneyInTransfer(
         string $appUserId,
-        int $id
+        string $id
     ): MoneyInTransfer {
-        $user = $this->getUser($appUserId);
-        $path = '/users/' . $user->appUserId . '/payins/banktransfers/' . $id;
+        $path = '/users/' . $appUserId . '/payins/banktransfers/' . $id;
         $method = 'GET';
 
         $res = $this->query($path, $method);
@@ -633,14 +632,12 @@ class Client
             'orderId' => $cardPayment->orderId,
             'isMine' => $cardPayment->isMine,
             'Require3DS' => $cardPayment->require3DS,
-            'payments' =>
-                $subPaymentsTable,
+            'payments' => $subPaymentsTable,
             'urlReturn' => $cardPayment->urlReturn,
             'urlCallback' => $cardPayment->urlCallback,
             'amount' => $cardPayment->amount,
         ];
         $res = $this->query($path, $method, $data, 2);
-
 
         $data = json_decode($res->getBody()->__toString(), true);
         $cardPayment->id = $data['Id'];
@@ -651,25 +648,36 @@ class Client
 
     /**
      * Retrieving card payment's info
-     * @param CardPayment $cardPayment
+     * @param string $paymentOrderId
      */
-    public function retrieveCardPayment(CardPayment $cardPayment) :CardPayment
+    public function retrieveCardPayment($paymentOrderId) :CardPayment
     {
-        $path = '/payins/cardpayments/' . $cardPayment->orderId;
+        $path = '/payins/cardpayments/' . $paymentOrderId;
         $method = 'GET';
 
-        $res = $this->query($path, $method);
+        $res = $this->query($path, $method, null, 2);
 
-        $cardPayment = json_decode($res->getBody()->__toString(), true);
+        $data = json_decode($res->getBody()->__toString(), true);
 
         $properties = [
-            'id'     => $cardPayment['Id'],
-            'status' => $cardPayment['Status'],
-            'type'   => $cardPayment['Type'],
-            'amount' => $cardPayment['Amount'],
-            'extraResults' => $cardPayment['ExtraResults'],
-
+            'id'     => $data['Id'],
+            'status' => $data['Status'],
+            'type'   => $data['Type'],
+            'amount' => $data['Amount'],
+            'card'      => $data['Card'],
+            'extraResults' => $data['ExtraResults'],
+            'errorCode' => $data['ErrorCode'],
+            'subPayments' => [],
         ];
+        if (array_key_exists('Payments', $data)) {
+            foreach ($data['Payments'] as $subPaymentData) {
+                $subPaymentProperties = [
+                    'orderId'        => $subPaymentData['OrderId'],
+                ];
+                $properties['subPayments'][] = new CardSubPayment($subPaymentProperties);
+            }
+        }
+
         $cardPayment = new CardPayment($properties);
 
         return $cardPayment;
@@ -677,25 +685,25 @@ class Client
 
     /**
      * Retrieving Card sub payment's info
-     * @param CardPayment $cardPayment
-     * @param CardSubPayment $cardSubPayment
+     * @param string $paymentOrderId
+     * @param string $subPaymentOrderId
      * @return CardSubPayment
      */
-    public function retrieveCardSubPayment($cardPayment, $cardSubPayment) :CardSubPayment
+    public function retrieveCardSubPayment($paymentOrderId, $subPaymentOrderId) :CardSubPayment
     {
-        $path = '/payins/cardpayments/' . $cardPayment->orderId . '/payments/' . $cardSubPayment->orderId;
+        $path = '/payins/cardpayments/' . $paymentOrderId . '/payments/' . $subPaymentOrderId;
         $method = 'GET';
 
-        $res = $this->query($path, $method);
+        $res = $this->query($path, $method, null, 2);
 
-        $cardSubPayment = json_decode($res->getBody()->__toString(), true);
+        $data = json_decode($res->getBody()->__toString(), true);
 
         $properties = [
-            'id'        => $cardSubPayment['Id'],
-            'status'    => $cardSubPayment['Status'],
-            'amount'    => $cardSubPayment['Amount'],
-            'card'      => $cardSubPayment['Card'],
-            'extraResults' => $cardSubPayment['ExtraResults'],
+            'id'        => $data['Id'],
+            'status'    => $data['Status'],
+            'amount'    => $data['Amount'],
+            'card'      => $data['Card'],
+            'extraResults' => $data['ExtraResults'],
         ];
         $cardSubPayment = new CardSubPayment($properties);
 

@@ -561,13 +561,16 @@ class ClientTest extends TestCase
         $client->createCardPayment($cardPayment);
         $this->assertNotNull($cardPayment->id);
 
-        $this->assertSame($cardPayment->id, $client->retrieveCardPayment($cardPayment)->id);
-        $this->assertSame($cardPayment->amount, $client->retrieveCardPayment($cardPayment)->amount);
+        $retrievedCardPayment = $client->retrieveCardPayment($cardPayment->orderId);
 
-        $subPayment1 = $client->retrieveCardSubPayment($cardPayment, $cardSubPayment1);
-        $this->assertNotNull($subPayment1->id);
+        $this->assertSame($cardPayment->id, $retrievedCardPayment->id);
+        $this->assertSame($retrievedCardPayment->subPayments[0]->orderId, $cardSubPayment1->orderId);
+        $this->assertSame($retrievedCardPayment->subPayments[1]->orderId, $cardSubPayment2->orderId);
 
-        $subPayment2 = $client->retrieveCardSubPayment($cardPayment, $cardSubPayment2);
-        $this->assertSame($subPayment2->amount, $cardSubPayment2->amount);
+        $retrievedSubPayment1 = $client->retrieveCardSubPayment($cardPayment->orderId, $cardSubPayment1->orderId);
+        $this->assertNotNull($retrievedSubPayment1->id);
+
+        $retrievedSubPayment2 = $client->retrieveCardSubPayment($cardPayment->orderId, $cardSubPayment2->orderId);
+        $this->assertSame($retrievedSubPayment2->amount, $cardSubPayment2->amount);
     }
 }
