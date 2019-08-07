@@ -21,11 +21,18 @@ class CardPayment extends AbstractHydratable
     public $orderId;
 
     /**
+     * Card
+     *
+     * @var iterable
+     */
+    public $card;
+
+    /**
      * Card Sub Payments
      *
      * @var iterable
      */
-    public $cardSubPayments;
+    public $subPayments = [];
 
     /**
      * is mine
