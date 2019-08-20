@@ -589,8 +589,8 @@ class Client
 
         $beneficiaryData = [
             'id' => $data['Beneficiary']['Id'],
-            'appAccountId' => $data['Beneficiary']['AppaccountId'],
-            'displayName' => $data['Beneficiary']['Displayname'],
+            'appAccountId' => $data['Beneficiary']['AppAccountId'],
+            'displayName' => $data['Beneficiary']['DisplayName'],
         ];
 
         $moneyInData = [
