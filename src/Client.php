@@ -23,9 +23,11 @@ use AssoConnect\SMoney\Object\MoneyInTransfer;
 use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
+use Fig\Http\Message\RequestMethodInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\ServerRequest;
+use GuzzleHttp\RequestOptions;
+use Koriym\HttpConstants\RequestHeader;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -75,6 +77,7 @@ class Client
      * @param  string        $method  Request method
      * @param  iterable|null $data    Query data
      * @param  int           $version API Version
+     * @param  array         $options Additional options for the request
      * @return Response
      */
     protected function query(
@@ -82,21 +85,21 @@ class Client
         string $method,
         iterable $data = null,
         int $version = 1,
-        $options = []
+        array $options = []
     ): ResponseInterface {
 
         $options = array_merge([
-            'headers' => [
-                'Accept'        => 'application/vnd.s-money.v' . $version . '+json',
-                'Authorization' => 'Bearer ' . $this->token,
+            RequestOptions::HEADERS => [
+                RequestHeader::ACCEPT        => 'application/vnd.s-money.v' . $version . '+json',
+                RequestHeader::AUTHORIZATION => 'Bearer ' . $this->token,
             ]
         ], $options);
 
         if ($data !== null) {
             $options = array_merge_recursive($options, [
-                'json' => $data,
-                'headers' => [
-                    'Content-Type' => 'application/vnd.s-money.v' . $version . '+json',
+                RequestOptions::JSON => $data,
+                RequestOptions::HEADERS => [
+                    RequestHeader::CONTENT_TYPE => 'application/vnd.s-money.v' . $version . '+json',
                 ]
             ]);
         }
@@ -118,7 +121,7 @@ class Client
         }
 
         $path = '/users';
-        $method = 'POST';
+        $method = RequestMethodInterface::METHOD_POST;
 
         $data = [
             'appuserid' => $user->appUserId,
@@ -166,7 +169,7 @@ class Client
         }
 
         $path = '/users/' . $user->appUserId;
-        $method = 'PUT';
+        $method = RequestMethodInterface::METHOD_PUT;
         $data = [
             'profile' => [
                 'civility' => $user->profile->civility,
@@ -215,7 +218,7 @@ class Client
     public function getUser(string $appUserId): User
     {
         $path = '/users/' . $appUserId;
-        $method = 'GET';
+        $method = RequestMethodInterface::METHOD_GET;
         $res = $this->query($path, $method);
 
         $data = json_decode($res->getBody()->__toString(), true);
@@ -253,9 +256,7 @@ class Client
             'profile' => new UserProfile($userProfileData),
             'company' => $company,
         ];
-        $user = new User($userData);
-
-        return $user;
+        return new User($userData);
     }
 
     /**
@@ -267,7 +268,7 @@ class Client
     public function createSubAccount(User $user, SubAccount $subAccount): SubAccount
     {
         $path = '/users/' . $user->appUserId . '/subaccounts';
-        $method = 'POST';
+        $method = RequestMethodInterface::METHOD_POST;
         $data = [
             'appaccountid' => $subAccount->appAccountId,
             'displayname'  => $subAccount->displayName,
@@ -288,12 +289,13 @@ class Client
     public function updateSubAccount(User $user, SubAccount $subAccount): SubAccount
     {
         $path = '/users/' . $user->appUserId . '/subaccounts/' . $subAccount->appAccountId;
-        $method = 'PUT';
+        $method = RequestMethodInterface::METHOD_PUT;
         $data = [
             'displayName' => $subAccount->displayName,
         ];
 
         $this->query($path, $method, $data);
+
         return $subAccount;
     }
 
@@ -306,7 +308,7 @@ class Client
     public function getSubAccount(User $user, string $appAccountId): SubAccount
     {
         $path = '/users/' . $user->appUserId . '/subaccounts/' . $appAccountId;
-        $method = 'GET';
+        $method = RequestMethodInterface::METHOD_GET;
         $res = $this->query($path, $method);
 
         $data = json_decode($res->getBody()->__toString(), true);
@@ -317,9 +319,7 @@ class Client
             'displayName' => $data['DisplayName'],
             'amount' => $data['Amount'],
         ];
-        $subAccount = new SubAccount($subAccountData);
-
-        return $subAccount;
+        return new SubAccount($subAccountData);
     }
 
     /**
@@ -330,16 +330,16 @@ class Client
      */
     public function createBankAccount(User $user, BankAccount $bankAccount) :BankAccount
     {
-        if ($bankAccount->iban === '' or $bankAccount->iban === null) {
+        if ($bankAccount->iban === '' || $bankAccount->iban === null) {
             throw new MissingIbanException('The BankAccount must have an IBAN');
         }
 
-        if ($bankAccount->bic === '' or $bankAccount->bic === null) {
+        if ($bankAccount->bic === '' || $bankAccount->bic === null) {
             throw new MissingBicException('The BankAccount must have a BIC');
         }
 
         $path = '/users/' . $user->appUserId . '/bankaccounts';
-        $method = 'POST';
+        $method = RequestMethodInterface::METHOD_POST;
         $data = [
             'displayname' => $bankAccount->displayName,
             'bic'  => $bankAccount->bic,
@@ -361,7 +361,7 @@ class Client
     public function getBankAccount(user $user, BankAccount $bankAccount) :BankAccount
     {
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id;
-        $method = 'GET';
+        $method = RequestMethodInterface::METHOD_GET;
         $res = $this->query($path, $method);
 
         $data = json_decode($res->getBody()->__toString(), true);
@@ -372,9 +372,7 @@ class Client
             'iban' => $data['Iban'],
             'status' => $data['Status'],
         ];
-        $bankAccount = new BankAccount($bankAccountData);
-
-        return $bankAccount;
+        return new BankAccount($bankAccountData);
     }
 
     /**
@@ -386,7 +384,7 @@ class Client
     public function updateBankAccount(User $user, BankAccount $bankAccount) :BankAccount
     {
         $path = '/users/' . $user->appUserId . '/bankaccounts/';
-        $method = 'PUT';
+        $method = RequestMethodInterface::METHOD_PUT;
         $data = [
             'id' => $bankAccount->id,
             'displayName' => $bankAccount->displayName,
@@ -405,7 +403,7 @@ class Client
     public function deleteBankAccount(User $user, BankAccount $bankAccount) :bool
     {
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id;
-        $method = 'DELETE';
+        $method = RequestMethodInterface::METHOD_DELETE;
 
         $this->query($path, $method);
         $bankAccount->id = null;
@@ -441,9 +439,7 @@ class Client
         ksort($table);
         $table[] = $this->signature;
         $hash = implode('+', array_values($table));
-        $callbackSignature = sha1($hash);
-
-        return $callbackSignature;
+        return sha1($hash);
     }
 
     /**
@@ -474,19 +470,19 @@ class Client
         UploadedFileInterface $bankDetails
     ): bool {
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id . '/rib/attachments';
-        $method = 'POST';
+        $method = RequestMethodInterface::METHOD_POST;
 
         $extension = pathinfo($bankDetails->getClientFilename(), PATHINFO_EXTENSION);
         $filename = $bankAccount->iban . '.' . $extension;
 
         $options = [
-            'multipart' => [
+            RequestOptions::MULTIPART => [
                 [
                     'name' => $bankAccount->iban,
                     'filename' => $filename,
                     'contents' => $bankDetails->getStream(),
                     'headers' => [
-                        'Content-Type' => $bankDetails->getClientMediaType(),
+                        RequestHeader::CONTENT_TYPE => $bankDetails->getClientMediaType(),
                     ]
                 ],
             ],
@@ -504,7 +500,7 @@ class Client
     public function submitKYCRequest(User $user, iterable $files) :KYC
     {
         $path = '/users/' . $user->appUserId . '/kyc/';
-        $method = 'POST';
+        $method = RequestMethodInterface::METHOD_POST;
 
         /**
          * @var UploadedFileInterface $file
@@ -520,7 +516,7 @@ class Client
                 'filename' => $filename,
                 'contents' => $file->getStream(),
                 'headers' => [
-                    'Content-Type' => $file->getClientMediaType(),
+                    RequestHeader::CONTENT_TYPE => $file->getClientMediaType(),
                 ],
             ];
         }
@@ -535,9 +531,7 @@ class Client
             'status' => $data['Status'],
             'reason' => $data['Reason'],
         ];
-        $kyc = new KYC($kycData);
-
-        return $kyc;
+        return new KYC($kycData);
     }
 
     /**
@@ -548,7 +542,7 @@ class Client
     public function retrieveKYCRequest(User $user): iterable
     {
         $path = '/users/' . $user->appUserId . '/kyc/';
-        $method = 'GET';
+        $method = RequestMethodInterface::METHOD_GET;
 
         $res = $this->query($path, $method);
 
@@ -574,7 +568,7 @@ class Client
      * @param  $id
      * @return MoneyInTransfer
      *
-     * We can't create/simulate transfer on Smoney sandbox
+     * We can't create/simulate transfer on S-Money sandbox
      * @codeCoverageIgnore
      */
     public function getMoneyInTransfer(
@@ -582,7 +576,7 @@ class Client
         string $id
     ): MoneyInTransfer {
         $path = '/users/' . $appUserId . '/payins/banktransfers/' . $id;
-        $method = 'GET';
+        $method = RequestMethodInterface::METHOD_GET;
 
         $res = $this->query($path, $method);
         $data = json_decode($res->getBody()->__toString(), true);
@@ -612,7 +606,7 @@ class Client
     public function createCardPayment($cardPayment) :CardPayment
     {
         $path = '/payins/cardpayments';
-        $method = 'POST';
+        $method = RequestMethodInterface::METHOD_POST;
 
         $subPaymentsTable = [];
 
@@ -653,7 +647,7 @@ class Client
     public function retrieveCardPayment($paymentOrderId) :CardPayment
     {
         $path = '/payins/cardpayments/' . $paymentOrderId;
-        $method = 'GET';
+        $method = RequestMethodInterface::METHOD_GET;
 
         $res = $this->query($path, $method, null, 2);
 
@@ -678,9 +672,7 @@ class Client
             }
         }
 
-        $cardPayment = new CardPayment($properties);
-
-        return $cardPayment;
+        return new CardPayment($properties);
     }
 
     /**
@@ -692,7 +684,7 @@ class Client
     public function retrieveCardSubPayment($paymentOrderId, $subPaymentOrderId) :CardSubPayment
     {
         $path = '/payins/cardpayments/' . $paymentOrderId . '/payments/' . $subPaymentOrderId;
-        $method = 'GET';
+        $method = RequestMethodInterface::METHOD_GET;
 
         $res = $this->query($path, $method, null, 2);
 
@@ -705,8 +697,6 @@ class Client
             'card'      => $data['Card'],
             'extraResults' => $data['ExtraResults'],
         ];
-        $cardSubPayment = new CardSubPayment($properties);
-
-        return $cardSubPayment;
+        return new CardSubPayment($properties);
     }
 }

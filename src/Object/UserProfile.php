@@ -4,9 +4,21 @@ declare(strict_types=1);
 
 namespace AssoConnect\SMoney\Object;
 
+/**
+ * The UserProfile holds the information about:
+ * - the person in case the User is an individual
+ * - the person in charge of the corporation in case the User is a company
+ */
 class UserProfile extends AbstractHydratable
 {
+    /**
+     * The person is male
+     */
     const CIVILITY_MR = 0;
+
+    /**
+     * The person is female
+     */
     const CIVILITY_MRS_MISS = 1;
 
     /**
@@ -17,14 +29,14 @@ class UserProfile extends AbstractHydratable
     public $civility;
 
     /**
-     * User's firstname
+     * User's first name
      *
      * @var string
      */
     public $firstname;
 
     /**
-     * User's surname
+     * User's last name
      *
      * @var string
      */

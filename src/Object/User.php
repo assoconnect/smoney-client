@@ -4,30 +4,37 @@ declare(strict_types=1);
 
 namespace AssoConnect\SMoney\Object;
 
+/**
+ * A User is a person or a corporation owning funds on S-Money
+ */
 class User extends AbstractHydratable
 {
     /**
-     * S-money user ID
+     * S-Money generated User's ID
      *
      * @var int
      */
     public $id;
 
     /**
-     * User identifier in the third-party application
+     * Third-party generated User's ID
      *
      * @var string
      */
     public $appUserId;
 
-    // Individual client
+    /**
+     * The User is a person
+     */
     const TYPE_INDIVIDUAL_CLIENT = 1;
 
-    // Professional client
+    /**
+     * The User is a corporation
+     */
     const TYPE_PROFESSIONAL_CLIENT = 2;
 
     /**
-     * User type
+     * User's type
      *
      * @var int
      */
@@ -41,13 +48,17 @@ class User extends AbstractHydratable
     public $profile;
 
     /**
-     * Cumulative amount of all user sub-accounts (in cents)
+     * Cumulative balance of all User's sub-accounts (in cents)
      *
      * @var int
      */
     public $amount;
 
     const STATUS_NOT_CONFIRMED = 0;
+
+    /**
+     * User is active
+     */
     const STATUS_OK = 1;
     const STATUS_FROZEN = 2;
     const STATUS_ON_THE_FLY = 3;
@@ -57,14 +68,14 @@ class User extends AbstractHydratable
     const STATUS_BLOCKED = 7;
 
     /**
-     * User status
+     * User's status
      *
      * @var int
      */
     public $status;
 
     /**
-     * If the created user is a company, then it contains information of the company.
+     * If the User is a company, then it contains information of the company.
      *
      * @var Company
      */
