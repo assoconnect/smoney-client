@@ -4,30 +4,42 @@ declare(strict_types=1);
 
 namespace AssoConnect\SMoney\Object;
 
+/**
+ * Account maintained by a real-world bank for a User
+ */
 class BankAccount extends AbstractHydratable
 {
     /**
-     * BankAccount ID
+     * S-Money generated BankAccount's ID
      *
      * @var int
      */
     public $id;
 
     /**
-     * BankAccount name
+     * BankAccount's name for display purpose only
      *
      * @var string
      */
     public $displayName;
 
+    /**
+     * The BankAccount successfully went through the KYC process
+     */
     const STATUS_VALIDATED = 1;
 
+    /**
+     * The BankAccount is currently in the KYC process
+     */
     const STATUS_PENDING_VALIDATION = 2;
 
+    /**
+     * The KYC process failed for this BankAccount
+     */
     const STATUS_DENIED = 3;
 
     /**
-     * BankAccount Status
+     * BankAccount's status
      *
      * @var int
      */

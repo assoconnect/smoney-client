@@ -4,36 +4,41 @@ declare(strict_types=1);
 
 namespace AssoConnect\SMoney\Object;
 
+/**
+ * A MoneyInTransfer is an incoming payment from a bank account to an S-Money User
+ * S-Money exposes a common IBAN to receive funds and uses the label (named Reference) of the transfer to find the right
+ * User to deposit funds to.
+ */
 class MoneyInTransfer extends AbstractHydratable
 {
     /**
-     * MoneyIn Smoney id
+     * S-Money generated MoneyInTransfer's ID
      *
      * @var int
      */
     public $id;
 
     /**
-     * MoneyIn Smoney amount
+     * MoneyInTransfer's amount in cents
      *
      * @var int
      */
     public $amount;
 
-    const STATUS_INCOMPLETE = 0;
-    const STATUS_PENDING = 1;
-    const STATUS_DENIED = 2;
-    const STATUS_OK = 3;
+    /**
+     * Successful payment
+     */
+    const STATUS_OK = 1;
 
     /**
-     * MoneyIn status
+     * MoneyInTransfer's status
      *
      * @var int
      */
     public $status;
 
     /**
-     * Beneficiary information
+     * MoneyInTransfer's Beneficiary
      *
      * @var Beneficiary
      */

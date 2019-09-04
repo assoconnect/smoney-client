@@ -4,31 +4,34 @@ declare(strict_types=1);
 
 namespace AssoConnect\SMoney\Object;
 
+/**
+ * A SubAccount is associated to a User and holds its own operations and has its own balance
+ */
 class SubAccount extends AbstractHydratable
 {
     /**
-     * Account identifier
+     * S-Money generated SubAccount's ID
      *
      * @var int
      */
     public $id;
 
     /**
-     * Account identifier in the third-party application
+     * Third-party generated SubAccount's ID
      *
      * @var string
      */
     public $appAccountId;
 
     /**
-     * Display name
+     * SubAccount's name for display purpose
      *
      * @var string
      */
     public $displayName;
 
     /**
-     * Account amount (in cents)
+     * SubAccount's balance in cents
      *
      * @var int
      */
