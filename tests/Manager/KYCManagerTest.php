@@ -20,8 +20,6 @@ class KYCManagerTest extends SMoneyTestCase
 
     public function testCreateKYCRequestRetrieveKYCRequest()
     {
-        $client = $this->getClient();
-
         $manager = $this->createManager();
 
         $userPro = $this->helperCreateUser(true);
@@ -42,10 +40,10 @@ class KYCManagerTest extends SMoneyTestCase
             'id' => $file2,
         ];
 
-        $kyc = $manager->submitKYCRequest($userPro, $files);
+        $kyc = $manager->submitKYCRequest($userPro->appUserId, $files);
         $this->assertSame(KYC::STATUS_PENDING, $kyc->status);
 
-        $kycRequests = $manager->retrieveKYCRequest($userPro);
+        $kycRequests = $manager->retrieveKYCRequests($userPro->appUserId);
         $this->assertEquals(1, count($kycRequests));
         $lastKyc = array_pop($kycRequests);
         $this->assertSame($kyc->id, $lastKyc->id);

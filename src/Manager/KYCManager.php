@@ -25,7 +25,7 @@ class KYCManager
 
     /**
      * Send bank details for a bank account
-     * @param User $user
+     * @param string $appUserId
      * @param BankAccount $bankAccount
      * @param UploadedFileInterface $bankDetails
      * @return bool
@@ -34,11 +34,11 @@ class KYCManager
      * @codeCoverageIgnore
      */
     public function submitBankAccountDetails(
-        User $user,
+        string $appUserId,
         BankAccount $bankAccount,
         UploadedFileInterface $bankDetails
     ): bool {
-        $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id . '/rib/attachments';
+        $path = '/users/' . $appUserId . '/bankaccounts/' . $bankAccount->id . '/rib/attachments';
         $method = RequestMethodInterface::METHOD_POST;
 
         $extension = pathinfo($bankDetails->getClientFilename(), PATHINFO_EXTENSION);
@@ -62,13 +62,13 @@ class KYCManager
 
     /**
      * Submiting KYC request to verify the given User
-     * @param User $user
+     * @param string $appUserId
      * @param UploadedFileInterface[] $files
      * @return KYC
      */
-    public function submitKYCRequest(User $user, iterable $files) :KYC
+    public function submitKYCRequest(string $appUserId, iterable $files) :KYC
     {
-        $path = '/users/' . $user->appUserId . '/kyc/';
+        $path = '/users/' . $appUserId . '/kyc/';
         $method = RequestMethodInterface::METHOD_POST;
 
         /**
@@ -104,13 +104,13 @@ class KYCManager
     }
 
     /**
-     * Retrieving KYC request's info
-     * @param User $user
+     * Retrieving KYC requests' info
+     * @param string $appUserId
      * @return array
      */
-    public function retrieveKYCRequest(User $user): array
+    public function retrieveKYCRequests(string $appUserId): array
     {
-        $path = '/users/' . $user->appUserId . '/kyc/';
+        $path = '/users/' . $appUserId . '/kyc/';
         $method = RequestMethodInterface::METHOD_GET;
 
         $res = $this->client->query($path, $method);
