@@ -19,6 +19,10 @@ This package can be installed with composer
 
 ## Usage
 
+This package provides several managers to handle the different S-Money features. They are self documented.
+
+For instance, the following code creates a new User on S-Money:
+
 ````php
 $guzzle = GuzzleHttp\Client();
 $client = new AssoConnect\SMoney\Client('YOUR S-MONEY ENDPOINT', 'YOUR S-MONEY TOKEN', $guzzle);
@@ -47,7 +51,8 @@ $user = new AssoConnect\SMoney\Object\User([
     ])
 ]);
 
-$client->createUser($userPro)->id; // S-Money's id of this newly created user
+$userManager = new AssoConnect\SMoney\Manager\UserManager($client);
+$userManager->createUser($userPro)->id; // S-Money's id of this newly created user
 ````
 
 ## Main concepts
