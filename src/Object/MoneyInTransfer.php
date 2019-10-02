@@ -28,7 +28,7 @@ class MoneyInTransfer extends AbstractHydratable
     /**
      * Successful payment
      */
-    const STATUS_OK = 1;
+    public const STATUS_OK = 1;
 
     /**
      * MoneyInTransfer's status

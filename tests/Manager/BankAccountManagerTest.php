@@ -12,7 +12,7 @@ use AssoConnect\SMoney\Test\SMoneyTestCase;
 
 class BankAccountManagerTest extends SMoneyTestCase
 {
-    protected function createManager() :BankAccountManager
+    protected function createManager(): BankAccountManager
     {
         $client = $this->getClient();
 
@@ -25,8 +25,8 @@ class BankAccountManagerTest extends SMoneyTestCase
 
         $params = [
             'displayName' => 'bank account',
-            'bic' => 'CMCIFR2A',
-            'iban' => 'FR7610011000201234567890188',
+            'bic' => 'SOGEFRPPXXX',
+            'iban' => 'FR7630003031100005055686128',
         ];
         $bankAccount = new BankAccount($params);
 
@@ -52,7 +52,7 @@ class BankAccountManagerTest extends SMoneyTestCase
     /**
      * @dataProvider providerCreateBankAccountException()
      */
-    public function testCreateBankAccountException(BankAccount $bankAccount, string $exception) :void
+    public function testCreateBankAccountException(BankAccount $bankAccount, string $exception): void
     {
         $bankAccountManager = $this->createManager();
 
@@ -62,7 +62,7 @@ class BankAccountManagerTest extends SMoneyTestCase
         $bankAccountManager->createBankAccount($user, $bankAccount);
     }
 
-    public function providerCreateBankAccountException() :iterable
+    public function providerCreateBankAccountException(): iterable
     {
         // Empty Iban
         $params = [

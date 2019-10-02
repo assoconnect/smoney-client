@@ -29,7 +29,7 @@ class BankAccountManager
      * @param BankAccount $bankAccount
      * @return BankAccount
      */
-    public function createBankAccount(User $user, BankAccount $bankAccount) :BankAccount
+    public function createBankAccount(User $user, BankAccount $bankAccount): BankAccount
     {
         if ($bankAccount->iban === '' or $bankAccount->iban === null) {
             throw new MissingIbanException('The BankAccount must have an IBAN');
@@ -59,7 +59,7 @@ class BankAccountManager
      * @param int $bankAccountId
      * @return BankAccount
      */
-    public function getBankAccount(string $appUserId, int $bankAccountId) :BankAccount
+    public function getBankAccount(string $appUserId, int $bankAccountId): BankAccount
     {
         $path = '/users/' . $appUserId . '/bankaccounts/' . $bankAccountId;
         $method = RequestMethodInterface::METHOD_GET;
@@ -82,7 +82,7 @@ class BankAccountManager
      * @param BankAccount $bankAccount
      * @return BankAccount
      */
-    public function updateBankAccount(User $user, BankAccount $bankAccount) :BankAccount
+    public function updateBankAccount(User $user, BankAccount $bankAccount): BankAccount
     {
         $path = '/users/' . $user->appUserId . '/bankaccounts/';
         $method = RequestMethodInterface::METHOD_PUT;
@@ -101,7 +101,7 @@ class BankAccountManager
      * @param BankAccount $bankAccount
      * @return bool
      */
-    public function deleteBankAccount(User $user, BankAccount $bankAccount) :bool
+    public function deleteBankAccount(User $user, BankAccount $bankAccount): bool
     {
         $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id;
         $method = RequestMethodInterface::METHOD_DELETE;
