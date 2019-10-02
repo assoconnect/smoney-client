@@ -43,7 +43,7 @@ class MandateRequest extends AbstractHydratable
      * 1 = Waiting
      * 2 = Refused
      * 3 = Accepted
-     *
+     * 
      * @var int
      */
     public $status;
