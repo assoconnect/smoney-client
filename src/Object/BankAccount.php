@@ -26,17 +26,17 @@ class BankAccount extends AbstractHydratable
     /**
      * The BankAccount successfully went through the KYC process
      */
-    const STATUS_VALIDATED = 1;
+    public const STATUS_VALIDATED = 1;
 
     /**
      * The BankAccount is currently in the KYC process
      */
-    const STATUS_PENDING_VALIDATION = 2;
+    public const STATUS_PENDING_VALIDATION = 2;
 
     /**
      * The KYC process failed for this BankAccount
      */
-    const STATUS_DENIED = 3;
+    public const STATUS_DENIED = 3;
 
     /**
      * BankAccount's status

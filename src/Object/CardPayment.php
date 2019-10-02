@@ -62,27 +62,27 @@ class CardPayment extends AbstractHydratable
     /**
      * The payment has been initiated but the payment form has not been submitted
      */
-    const STATUS_PENDING = 0;
+    public const STATUS_PENDING = 0;
 
     /**
      * The payment has been successfully completed
      */
-    const STATUS_SUCCESS = 1;
+    public const STATUS_SUCCESS = 1;
 
     /**
      * The payment has been refunded
      */
-    const STATUS_REFUNDED = 2;
+    public const STATUS_REFUNDED = 2;
 
     /**
      * The payment has failed
      */
-    const STATUS_FAILED = 3;
+    public const STATUS_FAILED = 3;
 
     /**
      * The payment has been canceled before completion
      */
-    const STATUS_CANCELED = 5;
+    public const STATUS_CANCELED = 5;
 
     /**
      * CardPayment's status
@@ -91,8 +91,8 @@ class CardPayment extends AbstractHydratable
      */
     public $status;
 
-    const TYPE_PAYMENT = 0;
-    const TYPE_REFUND = 1;
+    public const TYPE_PAYMENT = 0;
+    public const TYPE_REFUND = 1;
 
     /**
      * Payment or refund

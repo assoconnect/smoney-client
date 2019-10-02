@@ -26,7 +26,7 @@ class CardPaymentManager
      * @param $cardPayment
      * @return CardPayment
      */
-    public function createCardPayment($cardPayment) :CardPayment
+    public function createCardPayment($cardPayment): CardPayment
     {
         $path = '/payins/cardpayments';
         $method = RequestMethodInterface::METHOD_POST;
@@ -67,7 +67,7 @@ class CardPaymentManager
      * Retrieving card payment's info
      * @param string $paymentOrderId
      */
-    public function retrieveCardPayment($paymentOrderId) :CardPayment
+    public function retrieveCardPayment($paymentOrderId): CardPayment
     {
         $path = '/payins/cardpayments/' . $paymentOrderId;
         $method = RequestMethodInterface::METHOD_GET;
@@ -106,7 +106,7 @@ class CardPaymentManager
      * @param string $subPaymentOrderId
      * @return CardSubPayment
      */
-    public function retrieveCardSubPayment($paymentOrderId, $subPaymentOrderId) :CardSubPayment
+    public function retrieveCardSubPayment($paymentOrderId, $subPaymentOrderId): CardSubPayment
     {
         $path = '/payins/cardpayments/' . $paymentOrderId . '/payments/' . $subPaymentOrderId;
         $method = RequestMethodInterface::METHOD_GET;

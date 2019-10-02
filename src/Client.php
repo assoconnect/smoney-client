@@ -111,7 +111,7 @@ class Client
      * @param array $table
      * @return string
      */
-    private function makeCallbackSignature(array $table) :string
+    private function makeCallbackSignature(array $table): string
     {
         ksort($table);
         $table[] = $this->signature;
@@ -124,7 +124,7 @@ class Client
      * @param array $body
      * @return array
      */
-    public function signPayload(array $body) :array
+    public function signPayload(array $body): array
     {
         $body['CallbackSignature'] = $this->makeCallbackSignature($body);
 

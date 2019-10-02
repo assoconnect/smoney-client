@@ -34,22 +34,22 @@ class KYC extends User
     /**
      * The KYC request has not been submitted
      */
-    const STATUS_INCOMPLETE = 0;
+    public const STATUS_INCOMPLETE = 0;
 
     /**
      * The KYC request has been submitted to S-Money and is pending review
      */
-    const STATUS_PENDING = 1;
+    public const STATUS_PENDING = 1;
 
     /**
      * S-Money has rejected the KYC request
      */
-    const STATUS_DENIED = 2;
+    public const STATUS_DENIED = 2;
 
     /**
      * S-Money has accepted the KYC request
      */
-    const STATUS_OK = 3;
+    public const STATUS_OK = 3;
 
     /**
      * KYC status
