@@ -14,12 +14,12 @@ class UserProfile extends AbstractHydratable
     /**
      * The person is male
      */
-    const CIVILITY_MR = 0;
+    public const CIVILITY_MR = 0;
 
     /**
      * The person is female
      */
-    const CIVILITY_MRS_MISS = 1;
+    public const CIVILITY_MRS_MISS = 1;
 
     /**
      * Civility

@@ -43,7 +43,7 @@ class SMoneyTestCase extends TestCase
         return $this->client;
     }
 
-    protected function helperCreateUser(bool $pro) :User
+    protected function helperCreateUser(bool $pro): User
     {
         $client = $this->getClient();
 

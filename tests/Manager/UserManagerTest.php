@@ -18,14 +18,14 @@ use AssoConnect\SMoney\Test\SMoneyTestCase;
 
 class UserManagerTest extends SMoneyTestCase
 {
-    protected function createManager() :UserManager
+    protected function createManager(): UserManager
     {
         $client = $this->getClient();
 
         return new UserManager($client);
     }
 
-    public function testCreateGetUpdate() :void
+    public function testCreateGetUpdate(): void
     {
         $userManager = $this->createManager();
 
@@ -88,7 +88,7 @@ class UserManagerTest extends SMoneyTestCase
         $this->assertSameJson($subAccount, $_subAccount);
     }
 
-    public function providerCreateUpdateUserException() :iterable
+    public function providerCreateUpdateUserException(): iterable
     {
         $sets = [];
 
@@ -167,7 +167,7 @@ class UserManagerTest extends SMoneyTestCase
     /**
      * @dataProvider providerCreateUserException()
      */
-    public function testCreateUserException(User $user, string $exception) :void
+    public function testCreateUserException(User $user, string $exception): void
     {
         $userManager = $this->createManager();
 
@@ -175,7 +175,7 @@ class UserManagerTest extends SMoneyTestCase
         $userManager->createUser($user);
     }
 
-    public function providerCreateUserException() :iterable
+    public function providerCreateUserException(): iterable
     {
         $sets = $this->providerCreateUpdateUserException();
 
@@ -209,7 +209,7 @@ class UserManagerTest extends SMoneyTestCase
     /**
      * @dataProvider providerUpdateUserException()
      */
-    public function testUpdateUserException(User $user, string $exception) :void
+    public function testUpdateUserException(User $user, string $exception): void
     {
         $userManager = $this->createManager();
 
@@ -217,7 +217,7 @@ class UserManagerTest extends SMoneyTestCase
         $userManager->updateUser($user);
     }
 
-    public function providerUpdateUserException() :iterable
+    public function providerUpdateUserException(): iterable
     {
         $sets = $this->providerCreateUpdateUserException();
 

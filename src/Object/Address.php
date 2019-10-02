@@ -35,7 +35,7 @@ class Address extends AbstractHydratable
      *
      * @var string[]
      */
-    const COUNTRIES = [
+    public const COUNTRIES = [
         'AT', 'AU', 'AX', 'BE', 'BG', 'BL', 'BR', 'CA', 'CH', 'CY', 'CZ',
         'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GF', 'GP', 'GR', 'HK',
         'HR', 'HU', 'IE', 'IN', 'IS', 'IT', 'JP', 'KR', 'LI', 'LT', 'LU',

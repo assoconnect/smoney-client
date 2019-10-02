@@ -66,7 +66,7 @@ class KYCManager
      * @param UploadedFileInterface[] $files
      * @return KYC
      */
-    public function submitKYCRequest(string $appUserId, iterable $files) :KYC
+    public function submitKYCRequest(string $appUserId, iterable $files): KYC
     {
         $path = '/users/' . $appUserId . '/kyc/';
         $method = RequestMethodInterface::METHOD_POST;
