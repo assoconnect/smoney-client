@@ -13,7 +13,6 @@ class MandateManager
 {
     /**
      * @var Client
-     * @codeCoverageIgnore
      */
     protected $client;
 
