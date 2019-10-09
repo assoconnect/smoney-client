@@ -43,13 +43,6 @@ class MandateRequest extends AbstractHydratable
     public $status;
 
     /**
-     * Email address
-     *
-     * @var string
-     */
-    public $email;
-
-    /**
      * UMR
      *
      * @var string
