@@ -34,7 +34,11 @@ class MandateManager
      * S-money Sandbox doesn't allow to create Mandate
      * @codeCoverageIgnore
      */
-    public function createMandateRequest(User $user, int $bankAccountId, string $urlReturn, string $urlCallback) : MandateRequest
+    public function createMandateRequest(
+        User $user,
+        int $bankAccountId,
+        string $urlReturn,
+        string $urlCallback): MandateRequest
     {
         $path = '/users/' . $user->appUserId . '/mandates';
         $method = RequestMethodInterface::METHOD_POST;
@@ -71,7 +75,7 @@ class MandateManager
      * S-money Sandbox doesn't allow to create Mandate
      * @codeCoverageIgnore
      */
-    public function getMandate(string $appUserId, int $id) :MandateRequest
+    public function getMandate(string $appUserId, int $id): MandateRequest
     {
 
         $path = '/users/' . $appUserId . '/mandates/' . $id;
@@ -106,7 +110,7 @@ class MandateManager
      * S-money Sandbox refuse all calls for this endpoint :`500 Internal Server Error`
      * @codeCoverageIgnore
      */
-    public function sendPaperMandate(string $appUserId, int $id, UploadedFileInterface $file) :bool
+    public function sendPaperMandate(string $appUserId, int $id, UploadedFileInterface $file): bool
     {
         $path = '/users/' . $appUserId . '/mandates/' . $id . '/attachments';
         $method = RequestMethodInterface::METHOD_POST;
