@@ -7,6 +7,10 @@ PHP client for [S-Money API](http://api.s-money.fr/documentation/).
 The following features of the S-Money API are implemented:
 - user creation and update
 - subaccount creation and update
+- bank account creation, update and delete
+- bank card registration creation
+- KYC request creation
+- you can also retrive SEPA payment or transfert payment
 
 Feel free to submit a PR or contact us if you need a missing feature.
 
