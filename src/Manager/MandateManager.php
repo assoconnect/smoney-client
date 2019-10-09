@@ -24,21 +24,26 @@ class MandateManager
 
     /**
      * Creating a S-Money MandateRequest for the given User
+     * Sign an electronic mandate
      * @param User $user
      * @param int $bankAccountId
      * @param string $urlReturn
      * @param string $urlCallback
      * @return MandateRequest
+     *
+     * S-money Sandbox doesn't allow to create Mandate
+     * @codeCoverageIgnore
      */
     public function createMandateRequest(User $user, int $bankAccountId, string $urlReturn, string $urlCallback) :MandateRequest
     {
         $path = '/users/' . $user->appUserId . '/mandates';
-        $method = 'POST';
+        $method = RequestMethodInterface::METHOD_POST;
         $data = [
             'bankaccount' => ['id' => $bankAccountId],
             'urlreturn'  => $urlReturn,
             'urlcallback'  => $urlCallback,
         ];
+
         $res = $this->client->query($path, $method, $data, 2);
         $data = json_decode($res->getBody()->__toString(), true);
 
@@ -58,17 +63,19 @@ class MandateManager
     }
 
     /**
-     * Retrieve one mandate
+     * Retrieve a mandate
      * @param  $id
      * @param  $appUserId
      * @return MandateRequest
      *
+     * S-money Sandbox doesn't allow to create Mandate
+     * @codeCoverageIgnore
      */
     public function getMandate(string $appUserId, int $id) :MandateRequest
     {
 
         $path = '/users/' . $appUserId . '/mandates/' . $id;
-        $method = 'GET';
+        $method = RequestMethodInterface::METHOD_GET;
 
         $res = $this->client->query($path, $method);
         $data = json_decode($res->getBody()->__toString(), true);
@@ -90,12 +97,14 @@ class MandateManager
     }
 
     /**
-     * Retrieve one mandate
+     * Send a paper mandate to S-money
      * @param  $appUserId
      * @param  $id
      * @param  $file
      * @return Bool
      *
+     * S-money Sandbox refuse all calls for this endpoint :`500 Internal Server Error`
+     * @codeCoverageIgnore
      */
     public function sendPaperMandate(string $appUserId, int $id, UploadedFileInterface $file) :bool
     {
