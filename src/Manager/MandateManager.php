@@ -67,8 +67,8 @@ class MandateManager
 
     /**
      * Retrieve a mandate
-     * @param  $id
-     * @param  $appUserId
+     * @param  int $id
+     * @param  string $appUserId
      * @return MandateRequest
      *
      * S-money Sandbox doesn't allow to create Mandate
@@ -101,9 +101,9 @@ class MandateManager
 
     /**
      * Send a paper mandate to S-money
-     * @param  $appUserId
-     * @param  $id
-     * @param  $file
+     * @param  string $appUserId
+     * @param  int $id
+     * @param  UploadedFileInterface $file
      * @return Bool
      *
      * S-money Sandbox refuse all calls for this endpoint :`500 Internal Server Error`
