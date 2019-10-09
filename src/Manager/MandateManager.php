@@ -34,7 +34,7 @@ class MandateManager
      * S-money Sandbox doesn't allow to create Mandate
      * @codeCoverageIgnore
      */
-    public function createMandateRequest(User $user, int $bankAccountId, string $urlReturn, string $urlCallback) :MandateRequest
+    public function createMandateRequest(User $user, int $bankAccountId, string $urlReturn, string $urlCallback) : MandateRequest
     {
         $path = '/users/' . $user->appUserId . '/mandates';
         $method = RequestMethodInterface::METHOD_POST;
