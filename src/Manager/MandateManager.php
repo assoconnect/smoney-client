@@ -6,7 +6,6 @@ namespace AssoConnect\SMoney\Manager;
 
 use AssoConnect\SMoney\Client;
 use AssoConnect\SMoney\Object\MandateRequest;
-use AssoConnect\SMoney\Object\User;
 use Fig\Http\Message\RequestMethodInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
