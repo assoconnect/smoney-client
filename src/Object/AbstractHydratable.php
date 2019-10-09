@@ -12,7 +12,7 @@ namespace AssoConnect\SMoney\Object;
  */
 abstract class AbstractHydratable
 {
-    public function __construct(iterable $params)
+    public function __construct(iterable $params = [])
     {
         foreach ($params as $key => $value) {
             $this->$key = $value;
