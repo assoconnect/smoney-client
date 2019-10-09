@@ -14,6 +14,7 @@ class MandateManager
 {
     /**
      * @var Client
+     * @codeCoverageIgnore
      */
     protected $client;
 
@@ -62,8 +63,7 @@ class MandateManager
             'UMR' => $data['UMR'],
         ];
 
-        $mandateRequest = new MandateRequest($mandateRequestData);
-        return $mandateRequest;
+        return new MandateRequest($mandateRequestData);
     }
 
     /**
