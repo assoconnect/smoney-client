@@ -52,7 +52,7 @@ class User extends AbstractHydratable
      *
      * @var int
      */
-    public $amount;
+    public $amount = 0;
 
     public const STATUS_NOT_CONFIRMED = 0;
 
