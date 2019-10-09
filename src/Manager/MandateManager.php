@@ -34,14 +34,12 @@ class MandateManager
      * S-money Sandbox doesn't allow to create Mandate
      * @codeCoverageIgnore
      */
-    public function createMandateRequest
-    (
+    public function createMandateRequest(
         User $user,
         int $bankAccountId,
         string $urlReturn,
         string $urlCallback
-    ): MandateRequest
-    {
+    ): MandateRequest {
         $path = '/users/' . $user->appUserId . '/mandates';
         $method = RequestMethodInterface::METHOD_POST;
         $data = [
@@ -126,8 +124,8 @@ class MandateManager
                     'filename' => $filename,
                     'contents' => $file->getStream(),
                     'headers' => [
-                        'Accept'		=> 'application/vnd.s-money.v2+json',
-                        'Content-Type'	=> $file->getClientMediaType(),
+                        'Accept'        => 'application/vnd.s-money.v2+json',
+                        'Content-Type'  => $file->getClientMediaType(),
                     ]
                 ],
             ],
