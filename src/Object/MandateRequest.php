@@ -39,11 +39,10 @@ class MandateRequest extends AbstractHydratable
      * MandateRequest Status
      *
      * Values :
-     * 0 = Incomplete
-     * 1 = Waiting
-     * 2 = Refused
-     * 3 = Accepted
-     * 
+     * 0 = Pending
+     * 1 = Validated
+     * 2 = Dismissed
+     * 3 = Failure
      * @var int
      */
     public $status;

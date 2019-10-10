@@ -68,12 +68,12 @@ class MandateManager
      * Retrieve a mandate
      * @param  int $id
      * @param  string $appUserId
-     * @return MandateRequest
+     * @return array
      *
      * S-money Sandbox doesn't allow to create Mandate
      * @codeCoverageIgnore
      */
-    public function getMandate(string $appUserId, int $id): MandateRequest
+    public function getMandate(string $appUserId, int $id): array
     {
 
         $path = '/users/' . $appUserId . '/mandates/' . $id;
@@ -95,7 +95,13 @@ class MandateManager
             'date' => $data['Date'],
         ];
 
-        return new MandateRequest($mandateData);
+        return [
+            $mandateData,
+            'mandateDemands' => $data['mandateDemands'] !== null ? $data['mandateDemands'] : null,
+            'errorCode' => $data['ErrorCode'] !== null ? $data['ErrorCode'] : null,
+
+
+        ];
     }
 
     /**
