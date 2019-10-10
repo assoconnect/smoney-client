@@ -97,8 +97,8 @@ class MandateManager
 
         return [
             $mandateData,
-            'mandateDemands' => $data['mandateDemands'] !== null ? $data['mandateDemands'] : null,
-            'errorCode' => $data['ErrorCode'] !== null ? $data['ErrorCode'] : null,
+            'mandateDemands' => isset($data['mandateDemands']) ? $data['mandateDemands'] : null,
+            'errorCode' => isset($data['mandateDemands']) ? $data['ErrorCode'] : null,
 
 
         ];
