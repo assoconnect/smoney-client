@@ -15,7 +15,7 @@ class MandateRequest extends AbstractHydratable
     public $id;
 
     /**
-     * Url to call
+     * Url to call in order to electronically sign the mandate
      *
      * @var string
      */
@@ -38,12 +38,18 @@ class MandateRequest extends AbstractHydratable
     /**
      * MandateRequest Status
      *
+     * Values :
+     * 0 = Incomplete
+     * 1 = Waiting
+     * 2 = Refused
+     * 3 = Accepted
+     *
      * @var int
      */
     public $status;
 
     /**
-     * UMR
+     * Mandate Single Reference
      *
      * @var string
      */

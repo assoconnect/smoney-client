@@ -25,7 +25,7 @@ class MandateManager
     /**
      * Creating a S-Money MandateRequest for the given User
      * Sign an electronic mandate
-     * @param User $user
+     * @param string $appUserId
      * @param int $bankAccountId
      * @param string $urlReturn
      * @param string $urlCallback
@@ -35,12 +35,12 @@ class MandateManager
      * @codeCoverageIgnore
      */
     public function createMandateRequest(
-        User $user,
+        string $appUserId,
         int $bankAccountId,
         string $urlReturn,
         string $urlCallback
     ): MandateRequest {
-        $path = '/users/' . $user->appUserId . '/mandates';
+        $path = '/users/' . $appUserId . '/mandates';
         $method = RequestMethodInterface::METHOD_POST;
         $data = [
             'bankaccount' => ['id' => $bankAccountId],
@@ -113,7 +113,7 @@ class MandateManager
     {
         $path = '/users/' . $appUserId . '/mandates/' . $id . '/attachments';
         $method = RequestMethodInterface::METHOD_POST;
-        $filename = 'mandat - ' . date('Y-m-d H:i:s') . '.' . pathinfo($file->getClientFilename(), PATHINFO_EXTENSION);
+        $filename = 'mandate - ' . date('Y-m-d H:i:s') . '.' . pathinfo($file->getClientFilename(), PATHINFO_EXTENSION);
 
         $options = [
             'multipart' => [
@@ -123,7 +123,6 @@ class MandateManager
                     'filename' => $filename,
                     'contents' => $file->getStream(),
                     'headers' => [
-                        'Accept'        => 'application/vnd.s-money.v2+json',
                         'Content-Type'  => $file->getClientMediaType(),
                     ]
                 ],
