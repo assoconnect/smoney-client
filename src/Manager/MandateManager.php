@@ -86,9 +86,9 @@ class MandateManager
 
         $mandateData = [
             'id' => $data['Id'],
+            'status' => $data['Status'],
             'bankAccount' => $bankAccountData,
             'date' => new \DateTime($data['Date']),
-            'status' => $data['Status'],
             'UMR' => $data['UMR'],
         ];
 
