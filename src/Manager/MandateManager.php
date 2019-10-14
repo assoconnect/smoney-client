@@ -30,8 +30,6 @@ class MandateManager
      * @param string $urlCallback
      * @return MandateRequest
      *
-     * S-money Sandbox doesn't allow to create Mandate
-     * @codeCoverageIgnore
      */
     public function createMandateRequest(
         string $appUserId,
@@ -41,21 +39,22 @@ class MandateManager
     ): MandateRequest {
         $path = '/users/' . $appUserId . '/mandates';
         $method = RequestMethodInterface::METHOD_POST;
-        $data = [
+        $bankAccountData = [
             'bankaccount' => ['id' => $bankAccountId],
             'urlreturn'  => $urlReturn,
             'urlcallback'  => $urlCallback,
         ];
 
-        $res = $this->client->query($path, $method, $data, 2);
+        $res = $this->client->query($path, $method, $bankAccountData, 2);
         $data = json_decode($res->getBody()->__toString(), true);
 
         $mandateRequestData = [
             'id' => $data['Id'],
-            'BankAccount' => [
-                'Id' => $bankAccountId,
+            'bankAccount' => [
+                'id' => $bankAccountId,
+                'href' => $data['BankAccount']['Href'],
             ],
-            'date' => $data['Date'],
+            'date' => substr($data['Date'], 0, strrpos($data['Date'], '.')),
             'href' => $data['Href'],
             'status' => $data['Status'],
             'UMR' => $data['UMR'],
@@ -70,8 +69,6 @@ class MandateManager
      * @param  string $appUserId
      * @return array
      *
-     * S-money Sandbox doesn't allow to create Mandate
-     * @codeCoverageIgnore
      */
     public function getMandate(string $appUserId, int $id): array
     {
@@ -83,16 +80,16 @@ class MandateManager
         $data = json_decode($res->getBody()->__toString(), true);
 
         $bankAccountData = [
-            'id' => $data['BankAccount']['Id']
+            'id' => $data['BankAccount']['Id'],
+            'href' => $data['BankAccount']['Href']
         ];
 
         $mandateData = [
             'id' => $data['Id'],
-            'href' => $data['BankAccount']['Href'],
             'bankAccount' => $bankAccountData,
+            'date' => $data['Date'],
             'status' => $data['Status'],
             'UMR' => $data['UMR'],
-            'date' => $data['Date'],
         ];
 
         return [
@@ -111,8 +108,6 @@ class MandateManager
      * @param  UploadedFileInterface $file
      * @return Bool
      *
-     * S-money Sandbox refuse all calls for this endpoint :`500 Internal Server Error`
-     * @codeCoverageIgnore
      */
     public function sendPaperMandate(string $appUserId, int $id, UploadedFileInterface $file): bool
     {
