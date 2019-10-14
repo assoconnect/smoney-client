@@ -4,38 +4,38 @@ declare(strict_types=1);
 
 namespace AssoConnect\SMoney\Object;
 
-class MandateRequest extends AbstractHydratable
+class Mandate extends AbstractHydratable
 {
 
     /**
-     * MandateRequest ID
+     * Mandate ID
      *
      * @var int
      */
     public $id;
 
     /**
-     * S-Money Mandate Request is pending
+     * S-Money Mandate is pending
      */
     public const STATUS_PENDING = 0;
 
     /**
-     *  S-Money Mandate Request has been validated
+     *  S-Money Mandate has been validated
      */
     public const STATUS_VALIDATED = 1;
 
     /**
-     * S-Money Mandate Request has been dismissed
+     * S-Money Mandate has been dismissed
      */
     public const STATUS_DISMISSED = 2;
 
     /**
-     * S-Money Mandate Request has failed
+     * S-Money Mandate has failed
      */
     public const STATUS_FAILURE = 3;
 
     /**
-     * MandateRequest Status
+     * Mandate Status
      *
      * Values :
      * 0 = Pending
@@ -46,12 +46,6 @@ class MandateRequest extends AbstractHydratable
      */
     public $status;
 
-    /**
-     * Url to call in order to electronically sign the mandate
-     *
-     * @var string
-     */
-    public $href;
 
     /**
      * BankAccount information
@@ -61,7 +55,7 @@ class MandateRequest extends AbstractHydratable
     public $bankAccount;
 
     /**
-     * Request's date
+     * Mandate's date
      *
      * @var \DateTime
      */
@@ -73,4 +67,11 @@ class MandateRequest extends AbstractHydratable
      * @var string
      */
     public $UMR;
+
+    /**
+     * Mandate demands request details
+     *
+     * @var array
+     */
+    public $mandateDemands;
 }
