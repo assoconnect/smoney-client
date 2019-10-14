@@ -36,7 +36,6 @@ class MandateManagerTest extends SMoneyTestCase
         $client = $this->getClient();
         $bankAccountManager = new BankAccountManager($client);
         $bankAccount = $bankAccountManager->createBankAccount($userPro, $bankAccountTest);
-
         $mandateManager = new MandateManager($client);
         $mandateRequest = $mandateManager->createMandateRequest(
             $userPro->appUserId,
@@ -47,7 +46,10 @@ class MandateManagerTest extends SMoneyTestCase
         $mandateRequest = (array) $mandateRequest;
         // Href not returned by API on getMandate()
         unset($mandateRequest['href']) ;
+        // DateTime Object have different reference numbers
+        unset($mandateRequest['date']) ;
         $getMandate = $mandateManager->getMandate($userPro->appUserId, $mandateRequest['id'])[0];
+        unset($getMandate['date']) ;
         $this->assertSame($mandateRequest, $getMandate);
     }
 
@@ -77,19 +79,15 @@ class MandateManagerTest extends SMoneyTestCase
         $stream1 = fopen($file1, 'r+');
         $filesize1 = filesize($file1);
         $file1 = new UploadedFile($stream1, $filesize1, UPLOAD_ERR_OK, 'document.png', 'image/png');
-
-
         $mandate = $mandateManager->getMandate(
             $userPro->appUserId,
             $mandateRequest->id
         );
-
-        $paperMandateRequest = $mandateManager->sendPaperMandate(
+        $isPaperMandateSent = $mandateManager->sendPaperMandate(
             $userPro->appUserId,
             $mandate[0]['id'],
             $file1
         );
-
-        $this->assertTrue($paperMandateRequest);
+        $this->assertTrue($isPaperMandateSent);
     }
 }

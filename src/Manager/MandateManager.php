@@ -54,7 +54,7 @@ class MandateManager
                 'id' => $bankAccountId,
                 'href' => $data['BankAccount']['Href'],
             ],
-            'date' => substr($data['Date'], 0, strrpos($data['Date'], '.')),
+            'date' => new \DateTime(substr($data['Date'], 0, strrpos($data['Date'], '.'))),
             'href' => $data['Href'],
             'status' => $data['Status'],
             'UMR' => $data['UMR'],
@@ -87,15 +87,15 @@ class MandateManager
         $mandateData = [
             'id' => $data['Id'],
             'bankAccount' => $bankAccountData,
-            'date' => $data['Date'],
+            'date' => new \DateTime($data['Date']),
             'status' => $data['Status'],
             'UMR' => $data['UMR'],
         ];
 
         return [
             $mandateData,
-            'mandateDemands' => isset($data['mandateDemands']) ? $data['mandateDemands'] : null,
-            'errorCode' => isset($data['mandateDemands']) ? $data['ErrorCode'] : null,
+            'mandateDemands' => isset($data['mandateDemands']) ? $data['mandateDemands'] : [],
+            'errorCode' => isset($data['mandateDemands']) ? $data['ErrorCode'] : [],
 
 
         ];
