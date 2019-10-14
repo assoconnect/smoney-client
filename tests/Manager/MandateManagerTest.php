@@ -41,16 +41,18 @@ class MandateManagerTest extends SMoneyTestCase
             $userPro->appUserId,
             $bankAccount->id,
             'http://test.com/returnurl/',
-            'http://services.assoconnect-dev.com/services/smoney/callback'
+            'http://test.com/callbackurl/'
         );
         $mandateRequest = (array) $mandateRequest;
+        $mandate = $mandateManager->getMandate($userPro->appUserId, $mandateRequest['id']);
+        $mandate = (array) $mandate;
         // Href not returned by API on getMandate()
-        unset($mandateRequest['href']) ;
+        unset($mandateRequest['href']);
         // DateTime Object have different reference numbers
-        unset($mandateRequest['date']) ;
-        $getMandate = $mandateManager->getMandate($userPro->appUserId, $mandateRequest['id'])[0];
-        unset($getMandate['date']) ;
-        $this->assertSame($mandateRequest, $getMandate);
+        unset($mandateRequest['date']);
+        unset($mandate['date']);
+        unset($mandate['mandateDemands']);
+        $this->assertSame($mandateRequest, $mandate);
     }
 
     public function testSendPaperMandateSuccess()
@@ -72,7 +74,7 @@ class MandateManagerTest extends SMoneyTestCase
             $userPro->appUserId,
             $bankAccount->id,
             'http://test.com/returnurl/',
-            'http://services.assoconnect-dev.com/services/smoney/callback'
+            'http://test.com/callbackurl/'
         );
 
         $file1 = __DIR__ . '/../data/sample.pdf';
@@ -85,7 +87,7 @@ class MandateManagerTest extends SMoneyTestCase
         );
         $isPaperMandateSent = $mandateManager->sendPaperMandate(
             $userPro->appUserId,
-            $mandate[0]['id'],
+            $mandate->id,
             $file1
         );
         $this->assertTrue($isPaperMandateSent);

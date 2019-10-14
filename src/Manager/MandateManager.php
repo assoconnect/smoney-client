@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AssoConnect\SMoney\Manager;
 
 use AssoConnect\SMoney\Client;
+use AssoConnect\SMoney\Object\Mandate;
 use AssoConnect\SMoney\Object\MandateRequest;
 use Fig\Http\Message\RequestMethodInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -67,10 +68,9 @@ class MandateManager
      * Retrieve a mandate
      * @param  int $id
      * @param  string $appUserId
-     * @return array
-     *
+     * @return Mandate
      */
-    public function getMandate(string $appUserId, int $id): array
+    public function getMandate(string $appUserId, int $id): Mandate
     {
 
         $path = '/users/' . $appUserId . '/mandates/' . $id;
@@ -84,21 +84,17 @@ class MandateManager
             'href' => $data['BankAccount']['Href']
         ];
 
+
         $mandateData = [
             'id' => $data['Id'],
             'status' => $data['Status'],
             'bankAccount' => $bankAccountData,
             'date' => new \DateTime($data['Date']),
             'UMR' => $data['UMR'],
-        ];
-
-        return [
-            $mandateData,
             'mandateDemands' => isset($data['mandateDemands']) ? $data['mandateDemands'] : [],
-            'errorCode' => isset($data['mandateDemands']) ? $data['ErrorCode'] : [],
-
-
         ];
+
+        return new Mandate($mandateData);
     }
 
     /**
