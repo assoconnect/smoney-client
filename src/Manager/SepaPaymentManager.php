@@ -21,6 +21,53 @@ class SepaPaymentManager
     }
 
     /**
+     * Creates a SEPA payment
+     * @param string $appUserId
+     * @param string $orderId
+     * @param string $mandateId
+     * @param string $appAccountId
+     * @param string $amount
+     * @param bool $isMine
+     * @return SepaPayment
+     */
+    public function createSepaPayment(
+        string $appUserId,
+        string $orderId,
+        int $mandateId,
+        string $appAccountId,
+        string $amount,
+        bool $isMine
+    ): SepaPayment {
+        $path = '/users/' . $appUserId . '/payins/directdebits';
+
+        $method = RequestMethodInterface::METHOD_POST;
+
+        $sepaPaymentData = [
+            'orderid'       => $orderId,
+            'mandate'       => [
+                'id'    => $mandateId
+            ],
+            'beneficiary'   => [
+                'appaccountid'  => $appAccountId
+            ],
+            'amount'        => $amount,
+            'ismine'        => $isMine
+        ];
+
+        $res = $this->client->query($path, $method, $sepaPaymentData, 2);
+        $data = json_decode($res->getBody()->__toString(), true);
+
+        $properties = [
+            'id'     => $data['Id'],
+            'status' => $data['Status'],
+            'amount' => $data['Amount'],
+            'paymentDate' => new \DateTime($data['PaymentDate']),
+        ];
+
+        return new SepaPayment($properties);
+    }
+
+    /**
      * Retrieve one particular SEPA payment
      * @param  string $orderId
      * @return SepaPayment
@@ -43,6 +90,8 @@ class SepaPaymentManager
             'status' => $data['Status'],
             'amount' => $data['Amount'],
             'paymentDate' => new \DateTime($data['PaymentDate']),
+            'extraResults' => $data['ExtraResults'],
+            'errorCode' => $data['ErrorCode'],
         ];
 
         return new SepaPayment($properties);

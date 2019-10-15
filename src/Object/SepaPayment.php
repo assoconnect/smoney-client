@@ -43,4 +43,18 @@ class SepaPayment extends AbstractHydratable
      * @var \DateTime
      */
     public $paymentDate;
+
+    /**
+     * Extra data about the payment like the bank response or final status of the 3-D secure process
+     *
+     * @var iterable
+     */
+    public $extraResults;
+
+    /**
+     * Error code for failed payment
+     *
+     * @var int
+     */
+    public $errorCode;
 }
