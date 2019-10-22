@@ -89,7 +89,11 @@ class CardPaymentManager
         if (array_key_exists('Payments', $data)) {
             foreach ($data['Payments'] as $subPaymentData) {
                 $subPaymentProperties = [
-                    'orderId'        => $subPaymentData['OrderId'],
+                    'id'            => $subPaymentData['Id'],
+                    'orderId'       => $subPaymentData['OrderId'],
+                    'beneficiary'   => $subPaymentData['Beneficiary'],
+                    'amount'        => $subPaymentData['Amount'],
+                    'status'        => $subPaymentData['Status'],
                 ];
                 $properties['subPayments'][] = new CardSubPayment($subPaymentProperties);
             }
