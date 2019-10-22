@@ -32,7 +32,7 @@ class BankCardManagerTest extends SMoneyTestCase
         ]);
 
         $userManager = new UserManager($client);
-        $subAccount = $userManager->createSubAccount($user, $subAccount);
+        $subAccount = $userManager->createSubAccount($user->appUserId, $subAccount);
         $this->assertNotNull($subAccount->id);
 
         $cardParams = [

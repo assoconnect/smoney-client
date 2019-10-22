@@ -74,7 +74,7 @@ class UserManagerTest extends SMoneyTestCase
             'displayName' => 'SubAccountName',
         ]);
 
-        $subAccount = $userManager->createSubAccount($user, $subAccount);
+        $subAccount = $userManager->createSubAccount($user->appUserId, $subAccount);
         $this->assertNotNull($subAccount->id);
 
         $_subAccount = $userManager->getSubAccount($user->appUserId, $subAccount->appAccountId);
@@ -82,7 +82,7 @@ class UserManagerTest extends SMoneyTestCase
 
         $subAccount->displayName = 'NewName';
 
-        $userManager->updateSubAccount($user, $subAccount);
+        $userManager->updateSubAccount($user->appUserId, $subAccount);
 
         $_subAccount = $userManager->getSubAccount($user->appUserId, $subAccount->appAccountId);
         $this->assertSameJson($subAccount, $_subAccount);

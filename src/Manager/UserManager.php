@@ -184,13 +184,13 @@ class UserManager
 
     /**
      * Creating a S-Money SubAccount linked to the given User
-     * @param User $user
+     * @param string $appUserId
      * @param SubAccount $subAccount
      * @return SubAccount
      */
-    public function createSubAccount(User $user, SubAccount $subAccount): SubAccount
+    public function createSubAccount(string $appUserId, SubAccount $subAccount): SubAccount
     {
-        $path = '/users/' . $user->appUserId . '/subaccounts';
+        $path = '/users/' . $appUserId . '/subaccounts';
         $method = RequestMethodInterface::METHOD_POST;
         $data = [
             'appaccountid' => $subAccount->appAccountId,
@@ -206,13 +206,13 @@ class UserManager
 
     /**
      * Updating the S-Money SubAccount's display name
-     * @param User $user
+     * @param string $appUserId
      * @param SubAccount $subAccount
      * @return SubAccount
      */
-    public function updateSubAccount(User $user, SubAccount $subAccount): SubAccount
+    public function updateSubAccount(string $appUserId, SubAccount $subAccount): SubAccount
     {
-        $path = '/users/' . $user->appUserId . '/subaccounts/' . $subAccount->appAccountId;
+        $path = '/users/' . $appUserId . '/subaccounts/' . $subAccount->appAccountId;
         $method = RequestMethodInterface::METHOD_PUT;
         $data = [
             'displayName' => $subAccount->displayName,
