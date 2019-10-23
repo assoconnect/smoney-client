@@ -24,9 +24,9 @@ class SepaPaymentManager
      * Creates a SEPA payment
      * @param string $appUserId
      * @param string $orderId
-     * @param string $mandateId
+     * @param string $mandateId S-Money generated mandate Id
      * @param string $appAccountId
-     * @param string $amount
+     * @param int $amount
      * @param bool $isMine
      * @return SepaPayment
      */
@@ -35,7 +35,7 @@ class SepaPaymentManager
         string $orderId,
         int $mandateId,
         string $appAccountId,
-        string $amount,
+        int $amount,
         bool $isMine
     ): SepaPayment {
         $path = '/users/' . $appUserId . '/payins/directdebits';
