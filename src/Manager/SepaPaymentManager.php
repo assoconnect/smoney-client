@@ -90,7 +90,7 @@ class SepaPaymentManager
             'status' => $data['Status'],
             'amount' => $data['Amount'],
             'paymentDate' => new \DateTime($data['PaymentDate']),
-            'extraResults' => $data['ExtraResults'],
+            'extraResults' => isset($data['ExtraResults']) ? $data['ExtraResults'] : [],
             'errorCode' => $data['ErrorCode'],
         ];
 
