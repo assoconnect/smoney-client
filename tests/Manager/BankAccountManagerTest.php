@@ -32,7 +32,7 @@ class BankAccountManagerTest extends SMoneyTestCase
 
         $client = $this->getClient();
         $bankAccountManager = new BankAccountManager($client);
-        $bankAccountManager->createBankAccount($user, $bankAccount);
+        $bankAccountManager->createBankAccount($user->appUserId, $bankAccount);
 
         $this->assertNotNull($bankAccount->id);
         $this->assertNotNull($bankAccount->status);
@@ -41,11 +41,11 @@ class BankAccountManagerTest extends SMoneyTestCase
 
         $bankAccount->displayName = 'newName';
 
-        $bankAccountManager->updateBankAccount($user, $bankAccount);
+        $bankAccountManager->updateBankAccount($user->appUserId, $bankAccount);
 
         $this->assertSameJson($bankAccount, $bankAccountManager->getBankAccount($user->appUserId, $bankAccount->id));
 
-        $this->assertTrue($bankAccountManager->deleteBankAccount($user, $bankAccount));
+        $this->assertTrue($bankAccountManager->deleteBankAccount($user->appUserId, $bankAccount));
         $this->assertNull($bankAccount->id);
     }
 
@@ -59,7 +59,7 @@ class BankAccountManagerTest extends SMoneyTestCase
         $user = $this->helperCreateUser(true);
 
         $this->expectException($exception);
-        $bankAccountManager->createBankAccount($user, $bankAccount);
+        $bankAccountManager->createBankAccount($user->appUserId, $bankAccount);
     }
 
     public function providerCreateBankAccountException(): iterable

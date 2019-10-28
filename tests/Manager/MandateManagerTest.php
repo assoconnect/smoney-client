@@ -35,7 +35,7 @@ class MandateManagerTest extends SMoneyTestCase
         $bankAccountTest = new BankAccount($params);
         $client = $this->getClient();
         $bankAccountManager = new BankAccountManager($client);
-        $bankAccount = $bankAccountManager->createBankAccount($userPro, $bankAccountTest);
+        $bankAccount = $bankAccountManager->createBankAccount($userPro->appUserId, $bankAccountTest);
         $mandateManager = new MandateManager($client);
         $mandateRequest = $mandateManager->createMandateRequest(
             $userPro->appUserId,
@@ -66,7 +66,7 @@ class MandateManagerTest extends SMoneyTestCase
         $bankAccountTest = new BankAccount($params);
         $client = $this->getClient();
         $bankAccountManager = new BankAccountManager($client);
-        $bankAccount = $bankAccountManager->createBankAccount($userPro, $bankAccountTest);
+        $bankAccount = $bankAccountManager->createBankAccount($userPro->appUserId, $bankAccountTest);
 
         $mandateManager = new MandateManager($client);
 
