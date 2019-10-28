@@ -25,11 +25,11 @@ class BankAccountManager
 
     /**
      * Creating a S-Money BankAccount for the given User
-     * @param User $user
+     * @param string $appUserId
      * @param BankAccount $bankAccount
      * @return BankAccount
      */
-    public function createBankAccount(User $user, BankAccount $bankAccount): BankAccount
+    public function createBankAccount(string $appUserId, BankAccount $bankAccount): BankAccount
     {
         if ($bankAccount->iban === '' or $bankAccount->iban === null) {
             throw new MissingIbanException('The BankAccount must have an IBAN');
@@ -39,7 +39,7 @@ class BankAccountManager
             throw new MissingBicException('The BankAccount must have a BIC');
         }
 
-        $path = '/users/' . $user->appUserId . '/bankaccounts';
+        $path = '/users/' . $appUserId . '/bankaccounts';
         $method = RequestMethodInterface::METHOD_POST;
         $data = [
             'displayname' => $bankAccount->displayName,
@@ -78,13 +78,13 @@ class BankAccountManager
 
     /**
      * Updating the BankAccount display name based on it's id
-     * @param User $user
+     * @param string $appUserId
      * @param BankAccount $bankAccount
      * @return BankAccount
      */
-    public function updateBankAccount(User $user, BankAccount $bankAccount): BankAccount
+    public function updateBankAccount(string $appUserId, BankAccount $bankAccount): BankAccount
     {
-        $path = '/users/' . $user->appUserId . '/bankaccounts/';
+        $path = '/users/' . $appUserId . '/bankaccounts/';
         $method = RequestMethodInterface::METHOD_PUT;
         $data = [
             'id' => $bankAccount->id,
@@ -97,13 +97,13 @@ class BankAccountManager
 
     /**
      * Deleting the BankAccount in S-Money
-     * @param User $user
+     * @param string $appUserId
      * @param BankAccount $bankAccount
      * @return bool
      */
-    public function deleteBankAccount(User $user, BankAccount $bankAccount): bool
+    public function deleteBankAccount(string $appUserId, BankAccount $bankAccount): bool
     {
-        $path = '/users/' . $user->appUserId . '/bankaccounts/' . $bankAccount->id;
+        $path = '/users/' . $appUserId . '/bankaccounts/' . $bankAccount->id;
         $method = RequestMethodInterface::METHOD_DELETE;
 
         $this->client->query($path, $method);
