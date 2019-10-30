@@ -91,7 +91,7 @@ class SepaPaymentManager
             'amount' => $data['Amount'],
             'paymentDate' => new \DateTime($data['PaymentDate']),
             'extraResults' => isset($data['ExtraResults']) ? $data['ExtraResults'] : [],
-            'errorCode' => $data['ErrorCode'],
+            'errorCode' => isset($data['ErrorCode']) ? $data['ErrorCode'] : [],
         ];
 
         return new SepaPayment($properties);
