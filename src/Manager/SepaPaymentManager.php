@@ -59,6 +59,7 @@ class SepaPaymentManager
 
         $properties = [
             'id'     => $data['Id'],
+            'orderId' => $orderId,
             'status' => $data['Status'],
             'amount' => $data['Amount'],
             'paymentDate' => new \DateTime($data['PaymentDate']),
