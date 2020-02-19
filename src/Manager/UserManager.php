@@ -108,6 +108,14 @@ class UserManager
             ]
         ];
 
+        if ($user->type === User::TYPE_PROFESSIONAL_CLIENT && null !== $user->company) {
+            $data['company'] = [
+                'name' => $user->company->name,
+                'SIRET'   => $user->company->siret,
+                'NAFCode' => $user->company->nafCode,
+            ];
+        }
+
         $this->client->query($path, $method, $data);
 
         return $user;
