@@ -74,6 +74,7 @@ class UserManager
         $res = $this->client->query($path, $method, $data);
         $data = json_decode($res->getBody()->__toString(), true);
         $user->id = $data['Id'];
+        $user->status = $data['Status'];
         return $user;
     }
 
@@ -182,6 +183,7 @@ class UserManager
 
         $userData = [
             'id' => $data['Id'],
+            'status' => $data['Status'],
             'appUserId' => $data['AppUserId'],
             'type' => $data['Type'],
             'profile' => new UserProfile($userProfileData),

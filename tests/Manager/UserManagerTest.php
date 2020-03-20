@@ -35,6 +35,7 @@ class UserManagerTest extends SMoneyTestCase
 
         $userPro = $this->helperCreateUser(true);
         $this->assertNotNull($userPro->id);
+        $this->assertSame(User::STATUS_OK, $userPro->status);
         $this->assertSameJson($userPro, $userManager->getUser($userPro->appUserId));
 
         $userPro->profile->civility = UserProfile::CIVILITY_MRS_MISS;
@@ -67,8 +68,7 @@ class UserManagerTest extends SMoneyTestCase
 
         $this->assertSameJson($user, $userManager->getUser($user->appUserId));
 
-        //Testing SubAccount
-
+        // Testing SubAccount
         $subAccount = new SubAccount([
             'appAccountId' => uniqid(),
             'displayName' => 'SubAccountName',
