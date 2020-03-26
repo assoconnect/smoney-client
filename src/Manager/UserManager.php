@@ -75,6 +75,7 @@ class UserManager
         $data = json_decode($res->getBody()->__toString(), true);
         $user->id = $data['Id'];
         $user->status = $data['Status'];
+        $user->role = $data['Role'];
         return $user;
     }
 
@@ -188,6 +189,7 @@ class UserManager
             'type' => $data['Type'],
             'profile' => new UserProfile($userProfileData),
             'company' => $company,
+            'role' => $data['Role'],
         ];
         return new User($userData);
     }
