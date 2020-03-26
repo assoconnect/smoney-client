@@ -67,7 +67,7 @@ class UserProfile extends AbstractHydratable
      * CSP Code
      * INSEE PCS 2003
      *
-     * @var int
+     * @var string
      */
     public $csp;
 }

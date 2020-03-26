@@ -107,7 +107,7 @@ class UserManager
         }
 
         if (User::TYPE_INDIVIDUAL_CLIENT === $user->type) {
-            $data['profile']['CSPCode'] = $user->profile->csp ?? 54;
+            $data['profile']['CSPCode'] = $user->profile->csp ?? '54';
         }
 
         return $data;
