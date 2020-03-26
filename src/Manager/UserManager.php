@@ -95,6 +95,7 @@ class UserManager
                     'country' => $user->profile->address->country,
                 ],
                 'email' => $user->profile->email,
+                'CSPCode' => $user->profile->csp ?? '54',
             ]
         ];
 
@@ -104,10 +105,6 @@ class UserManager
                 'SIRET'   => $user->company->siret,
                 'NAFCode' => $user->company->nafCode,
             ];
-        }
-
-        if (User::TYPE_INDIVIDUAL_CLIENT === $user->type) {
-            $data['profile']['CSPCode'] = $user->profile->csp ?? '54';
         }
 
         return $data;
