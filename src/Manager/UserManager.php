@@ -16,6 +16,7 @@ use AssoConnect\SMoney\Object\SubAccount;
 use AssoConnect\SMoney\Object\User;
 use AssoConnect\SMoney\Object\UserProfile;
 use Fig\Http\Message\RequestMethodInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class UserManager
 {
@@ -44,38 +45,14 @@ class UserManager
 
         $path = '/users';
         $method = RequestMethodInterface::METHOD_POST;
+        $data = $this->formatData($user);
+        $data['appuserid'] = $user->appUserId;
+        $data['type'] = $user->type;
 
-        $data = [
-            'appuserid' => $user->appUserId,
-            'type' => $user->type,
-            'profile' => [
-                'civility' => $user->profile->civility,
-                'firstname' => $user->profile->firstname,
-                'lastname' => $user->profile->lastname,
-                'birthdate' => $user->profile->birthdate->format('c'),
-                'address' => [
-                    'street' => $user->profile->address->street,
-                    'zipcode' => $user->profile->address->zipcode,
-                    'city' => $user->profile->address->city,
-                    'country' => $user->profile->address->country,
-                ],
-                'email' => $user->profile->email,
-            ]
-        ];
+        $response = $this->client->query($path, $method, $data);
 
-        if ($user->type === User::TYPE_PROFESSIONAL_CLIENT) {
-            $data['company'] = [
-                'name' => $user->company->name,
-                'SIRET'   => $user->company->siret,
-                'NAFCode' => $user->company->nafCode,
-            ];
-        }
+        $this->parseResponse($response, $user);
 
-        $res = $this->client->query($path, $method, $data);
-        $data = json_decode($res->getBody()->__toString(), true);
-        $user->id = $data['Id'];
-        $user->status = $data['Status'];
-        $user->role = $data['Role'];
         return $user;
     }
 
@@ -94,6 +71,17 @@ class UserManager
 
         $path = '/users/' . $user->appUserId;
         $method = RequestMethodInterface::METHOD_PUT;
+        $data = $this->formatData($user);
+
+        $response = $this->client->query($path, $method, $data);
+
+        $this->parseResponse($response, $user);
+
+        return $user;
+    }
+
+    private function formatData(User $user): array
+    {
         $data = [
             'profile' => [
                 'civility' => $user->profile->civility,
@@ -110,7 +98,7 @@ class UserManager
             ]
         ];
 
-        if ($user->type === User::TYPE_PROFESSIONAL_CLIENT && null !== $user->company) {
+        if (User::TYPE_PROFESSIONAL_CLIENT === $user->type && $user->company) {
             $data['company'] = [
                 'name' => $user->company->name,
                 'SIRET'   => $user->company->siret,
@@ -118,9 +106,20 @@ class UserManager
             ];
         }
 
-        $this->client->query($path, $method, $data);
+        if (User::TYPE_INDIVIDUAL_CLIENT === $user->type) {
+            $data['profile']['CSPCode'] = $user->profile->csp ?? 54;
+        }
 
-        return $user;
+        return $data;
+    }
+
+    private function parseResponse(ResponseInterface $response, User $user): void
+    {
+        $data = json_decode($response->getBody()->__toString(), true);
+
+        $user->id = $data['Id'];
+        $user->status = $data['Status'];
+        $user->role = $data['Role'];
     }
 
     /**
@@ -180,6 +179,7 @@ class UserManager
             'birthdate' => new \DateTime($data['Profile']['Birthdate']),
             'address' => new Address($addressData),
             'email' => $data['Profile']['Email'],
+            'csp' => $data['Profile']['CSPCode'],
         ];
 
         $userData = [

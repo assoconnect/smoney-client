@@ -94,7 +94,8 @@ class SMoneyTestCase extends TestCase
                         'country' => 'FR',
                     ]),
                     'email' => 'test-' . uniqid() . '@test.com',
-                ]),
+                    'csp' => 54,
+                ])
             ]);
             return $userManager->createUser($user);
         }

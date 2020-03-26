@@ -54,6 +54,8 @@ class UserManagerTest extends SMoneyTestCase
 
         $user = $this->helperCreateUser($pro = false);
         $this->assertNotNull($user->id);
+        $this->assertSame(User::STATUS_OK, $user->status);
+        $this->assertSame(User::ROLE_KNOWN, $user->role);
         $this->assertSameJson($user, $userManager->getUser($user->appUserId));
 
         $user->profile->civility = UserProfile::CIVILITY_MRS_MISS;

@@ -62,4 +62,12 @@ class UserProfile extends AbstractHydratable
      * @var string
      */
     public $email;
+
+    /**
+     * CSP Code
+     * INSEE PCS 2003
+     *
+     * @var int
+     */
+    public $csp;
 }
