@@ -53,23 +53,26 @@ class SMoneyTestCase extends TestCase
         $birthdate->setDate(1980, 1, 1);
         $birthdate->setTime(0, 0, 0, 0);
 
+        $userProfile = new UserProfile([
+            'civility' => UserProfile::CIVILITY_MR,
+            'firstname' => 'Test',
+            'lastname' => 'McTestington',
+            'birthdate' => $birthdate,
+            'address' => new Address([
+                'street' => 'rue du Test',
+                'zipcode' => '75002',
+                'city' => 'TestVille',
+                'country' => 'FR',
+            ]),
+            'email' => 'test-' . uniqid() . '@test.com',
+            'csp' => '54',
+        ]);
+
         if ($pro === true) {
             $userPro = new User([
                 'appUserId' => 'appuserid-' . uniqid(),
                 'type' => User::TYPE_PROFESSIONAL_CLIENT,
-                'profile' => new UserProfile([
-                    'civility' => UserProfile::CIVILITY_MR,
-                    'firstname' => 'Test',
-                    'lastname' => 'McTestington',
-                    'birthdate' => $birthdate,
-                    'address' => new Address([
-                        'street' => 'rue du Test',
-                        'zipcode' => '75002',
-                        'city' => 'TestVille',
-                        'country' => 'FR',
-                    ]),
-                    'email' => 'test-' . uniqid() . '@test.com',
-                ]),
+                'profile' => $userProfile,
                 'company' => new Company([
                     'name' => 'CompanyName',
                     'siret' => '123456789',
@@ -82,19 +85,7 @@ class SMoneyTestCase extends TestCase
             $user = new User([
                 'appUserId' => 'appuserid-' . uniqid(),
                 'type' => User::TYPE_INDIVIDUAL_CLIENT,
-                'profile' => new UserProfile([
-                    'civility' => UserProfile::CIVILITY_MR,
-                    'firstname' => 'Test',
-                    'lastname' => 'McTestington',
-                    'birthdate' => $birthdate,
-                    'address' => new Address([
-                        'street' => 'rue du Test',
-                        'zipcode' => '75002',
-                        'city' => 'TestVille',
-                        'country' => 'FR',
-                    ]),
-                    'email' => 'test-' . uniqid() . '@test.com',
-                ]),
+                'profile' => $userProfile,
             ]);
             return $userManager->createUser($user);
         }

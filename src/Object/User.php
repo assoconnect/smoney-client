@@ -74,6 +74,17 @@ class User extends AbstractHydratable
      */
     public $status;
 
+    /** User without KYC */
+    public const ROLE_UNKNOWN = 1;
+
+    /** User with a valid KYC */
+    public const ROLE_KNOWN = 1;
+
+    /**
+     * User's KYC status
+     */
+    public $role;
+
     /**
      * If the User is a company, then it contains information of the company.
      *
