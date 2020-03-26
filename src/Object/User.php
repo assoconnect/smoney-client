@@ -75,7 +75,7 @@ class User extends AbstractHydratable
     public $status;
 
     /** User without KYC */
-    public const ROLE_UNKNOWN = 1;
+    public const ROLE_UNKNOWN = 0;
 
     /** User with a valid KYC */
     public const ROLE_KNOWN = 1;
