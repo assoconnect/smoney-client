@@ -7,15 +7,18 @@ namespace AssoConnect\SMoney\Manager;
 use AssoConnect\SMoney\Client;
 use AssoConnect\SMoney\Object\CardPayment;
 use AssoConnect\SMoney\Object\CardSubPayment;
+use AssoConnect\SMoney\Parser\CardPaymentParser;
 use Fig\Http\Message\RequestMethodInterface;
 
 class CardPaymentManager
 {
     protected Client $client;
+    protected CardPaymentParser $parser;
 
-    public function __construct(Client $client)
+    public function __construct(Client $client, CardPaymentParser $parser)
     {
         $this->client = $client;
+        $this->parser = $parser;
     }
 
     /**
@@ -23,14 +26,14 @@ class CardPaymentManager
      * @param $cardPayment
      * @return CardPayment
      */
-    public function createCardPayment($cardPayment): CardPayment
+    public function createCardPayment(CardPayment $cardPayment): CardPayment
     {
         $path = '/payins/cardpayments';
         $method = RequestMethodInterface::METHOD_POST;
 
         $subPaymentsTable = [];
 
-        if ($carSubPayments = $cardPayment->cardSubPayments) {
+        if ($carSubPayments = $cardPayment->subPayments) {
             foreach ($carSubPayments as $cardSubPayment) {
                 $subPaymentsTable[] =  [
                     'orderId' => $cardSubPayment->orderId,
@@ -73,7 +76,7 @@ class CardPaymentManager
 
         $data = json_decode($res->getBody()->__toString(), true);
 
-        return $this->parseCardPayment($data);
+        return $this->parser->parse($data);
     }
 
     /**
@@ -101,7 +104,7 @@ class CardPaymentManager
         return new CardSubPayment($properties);
     }
 
-    public function retrieveCardPayments(int $page = 1, int $perPage = 50): iterable
+    public function retrieveCardPayments(int $page = 1, int $perPage = 50): array
     {
         $path = '/payins/cardpayments?page=' . $page . '&perPage=' . $perPage;
         $method = RequestMethodInterface::METHOD_GET;
@@ -110,36 +113,6 @@ class CardPaymentManager
 
         $data = json_decode($res->getBody()->__toString(), true);
 
-        return array_map([$this, 'parseCardPayment'], $data);
-    }
-
-    private function parseCardPayment(array $data): CardPayment
-    {
-        $properties = [
-            'id'           => $data['Id'],
-            'status'       => $data['Status'],
-            'type'         => $data['Type'],
-            'amount'       => $data['Amount'],
-            'extraResults' => $data['ExtraResults'],
-            'errorCode'    => $data['ErrorCode'],
-            'subPayments'  => [],
-        ];
-        if (array_key_exists('Card', $data)) {
-            $properties['card'] = $data['Card'];
-        }
-        if (array_key_exists('Payments', $data)) {
-            foreach ($data['Payments'] as $subPaymentData) {
-                $subPaymentProperties = [
-                    'id'            => $subPaymentData['Id'],
-                    'orderId'       => $subPaymentData['OrderId'],
-                    'beneficiary'   => $subPaymentData['Beneficiary'],
-                    'amount'        => $subPaymentData['Amount'],
-                    'status'        => $subPaymentData['Status'],
-                ];
-                $properties['subPayments'][] = new CardSubPayment($subPaymentProperties);
-            }
-        }
-
-        return new CardPayment($properties);
+        return array_map([$this->parser, 'parse'], $data);
     }
 }

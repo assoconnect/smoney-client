@@ -8,42 +8,14 @@ namespace AssoConnect\SMoney\Object;
  * SubPayment of a CardPayment
  * Subpayments exist when a CardPayment has multiple recipients
  */
-class CardSubPayment extends AbstractHydratable
+class CardSubPayment extends AbstractPayment
 {
-    /**
-     * S-money generated SubPayment's ID
-     *
-     * @var int
-     */
-    public $id;
-
-    /**
-     * Third-party generated SubPayment's ID
-     *
-     * @var string
-     */
-    public $orderId;
-
     /**
      * Beneficiary
      *
      * @var array
      */
     public $beneficiary;
-
-    /**
-     * Amount in cents
-     *
-     * @var int
-     */
-    public $amount;
-
-    /**
-     * Status
-     *
-     * @var int
-     */
-    public $status;
 
     /**
      * Card info

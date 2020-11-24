@@ -6,15 +6,18 @@ namespace AssoConnect\SMoney\Manager;
 
 use AssoConnect\SMoney\Client;
 use AssoConnect\SMoney\Object\SepaPayment;
+use AssoConnect\SMoney\Parser\SepaPaymentParser;
 use Fig\Http\Message\RequestMethodInterface;
 
 class SepaPaymentManager
 {
     protected Client $client;
+    protected SepaPaymentParser $parser;
 
-    public function __construct(Client $client)
+    public function __construct(Client $client, SepaPaymentParser $parser)
     {
         $this->client = $client;
+        $this->parser = $parser;
     }
 
     /**
@@ -54,15 +57,7 @@ class SepaPaymentManager
         $res = $this->client->query($path, $method, $sepaPaymentData, 2);
         $data = json_decode($res->getBody()->__toString(), true);
 
-        $properties = [
-            'id'     => $data['Id'],
-            'orderId' => $orderId,
-            'status' => $data['Status'],
-            'amount' => $data['Amount'],
-            'paymentDate' => new \DateTime($data['PaymentDate']),
-        ];
-
-        return new SepaPayment($properties);
+        return $this->parser->parse($data);
     }
 
     /**
@@ -76,20 +71,24 @@ class SepaPaymentManager
     public function retrieveSepaPayment(string $orderId): SepaPayment
     {
         $path = '/payins/directdebits/' . $orderId;
-
         $method = RequestMethodInterface::METHOD_GET;
 
         $res = $this->client->query($path, $method, null, 2);
 
         $data = json_decode($res->getBody()->__toString(), true);
 
-        $properties = [
-            'id'     => $data['Id'],
-            'status' => $data['Status'],
-            'amount' => $data['Amount'],
-            'paymentDate' => new \DateTime($data['PaymentDate']),
-        ];
+        return $this->parser->parse($data);
+    }
 
-        return new SepaPayment($properties);
+    public function retrieveSepaPayments(int $page = 1, int $perPage = 50): array
+    {
+        $path = '/payins/directdebit?page=' . $page . '&perPage=' . $perPage;
+        $method = RequestMethodInterface::METHOD_GET;
+
+        $res = $this->client->query($path, $method);
+
+        $data = json_decode($res->getBody()->__toString(), true);
+
+        return array_map([$this->parser, 'parse'], $data);
     }
 }

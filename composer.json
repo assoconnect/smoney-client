@@ -7,6 +7,11 @@
             "AssoConnect\\SMoney\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "AssoConnect\\SMoney\\Tests\\": "tests/"
+        }
+    },
     "require": {
         "php": "^7.4",
         "guzzlehttp/guzzle": "^6.3|^7.0",

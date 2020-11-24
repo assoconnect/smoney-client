@@ -17,27 +17,11 @@ class Card extends AbstractHydratable
     public $id;
 
     /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
      * Application card id
      *
      * @var string
      */
     public $appCardId;
-
-    /**
-     * @return string
-     */
-    public function getAppCardId(): string
-    {
-        return $this->appCardId;
-    }
 
     /**
      * Name of the card
@@ -47,27 +31,11 @@ class Card extends AbstractHydratable
     public $name;
 
     /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
      * card's mask
      *
      * @var string
      */
     public $hint;
-
-    /**
-     * @return string
-     */
-    public function getHint(): string
-    {
-        return $this->hint;
-    }
 
     /**
      * ISO code
@@ -77,14 +45,6 @@ class Card extends AbstractHydratable
     public $country;
 
     /**
-     * @return string
-     */
-    public function getCountry(): string
-    {
-        return $this->country;
-    }
-
-    /**
      * Network
      *
      * @var int
@@ -92,25 +52,9 @@ class Card extends AbstractHydratable
     public $network;
 
     /**
-     * @return int
-     */
-    public function getNetwork(): int
-    {
-        return $this->network;
-    }
-
-    /**
      * Expiry date
      *
      * @var string
      */
     public $expiryDate;
-
-    /**
-     * @return string
-     */
-    public function getExpiryDate(): string
-    {
-        return $this->expiryDate;
-    }
 }
