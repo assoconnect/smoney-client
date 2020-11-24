@@ -19,7 +19,7 @@ class BankCardManagerTest extends SMoneyTestCase
 
         return new BankCardManager($client);
     }
- 
+
     public function testCreateRetrieveBankCardRegistration()
     {
         $client = $this->getClient();
