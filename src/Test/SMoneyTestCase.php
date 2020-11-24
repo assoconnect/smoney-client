@@ -19,7 +19,7 @@ class SMoneyTestCase extends TestCase
      */
     protected $client;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         if ($this->client) {
