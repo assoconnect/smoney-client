@@ -73,32 +73,7 @@ class CardPaymentManager
 
         $data = json_decode($res->getBody()->__toString(), true);
 
-        $properties = [
-            'id'     => $data['Id'],
-            'status' => $data['Status'],
-            'type'   => $data['Type'],
-            'amount' => $data['Amount'],
-            'card'      => $data['Card'],
-            'extraResults' => $data['ExtraResults'],
-            'errorCode' => $data['ErrorCode'],
-            'subPayments' => [],
-        ];
-        if (array_key_exists('Payments', $data)) {
-            foreach ($data['Payments'] as $subPaymentData) {
-                $subPaymentProperties = [
-                    'id'            => $subPaymentData['Id'],
-                    'orderId'       => $subPaymentData['OrderId'],
-                    'beneficiary'   => $subPaymentData['Beneficiary'],
-                    'amount'        => $subPaymentData['Amount'],
-                    'status'        => $subPaymentData['Status'],
-                ];
-                $properties['subPayments'][] = new CardSubPayment($subPaymentProperties);
-            }
-        }
-
-        $cardPayment = new CardPayment($properties);
-
-        return $cardPayment;
+        return $this->parseCardPayment($data);
     }
 
     /**
@@ -124,5 +99,47 @@ class CardPaymentManager
             'extraResults' => $data['ExtraResults'],
         ];
         return new CardSubPayment($properties);
+    }
+
+    public function retrieveCardPayments(int $page = 1, int $perPage = 50): iterable
+    {
+        $path = '/payins/cardpayments?page=' . $page . '&perPage=' . $perPage;
+        $method = RequestMethodInterface::METHOD_GET;
+
+        $res = $this->client->query($path, $method, null);
+
+        $data = json_decode($res->getBody()->__toString(), true);
+
+        return array_map([$this, 'parseCardPayment'], $data);
+    }
+
+    private function parseCardPayment(array $data): CardPayment
+    {
+        $properties = [
+            'id'           => $data['Id'],
+            'status'       => $data['Status'],
+            'type'         => $data['Type'],
+            'amount'       => $data['Amount'],
+            'extraResults' => $data['ExtraResults'],
+            'errorCode'    => $data['ErrorCode'],
+            'subPayments'  => [],
+        ];
+        if (array_key_exists('Card', $data)) {
+            $properties['card'] = $data['Card'];
+        }
+        if (array_key_exists('Payments', $data)) {
+            foreach ($data['Payments'] as $subPaymentData) {
+                $subPaymentProperties = [
+                    'id'            => $subPaymentData['Id'],
+                    'orderId'       => $subPaymentData['OrderId'],
+                    'beneficiary'   => $subPaymentData['Beneficiary'],
+                    'amount'        => $subPaymentData['Amount'],
+                    'status'        => $subPaymentData['Status'],
+                ];
+                $properties['subPayments'][] = new CardSubPayment($subPaymentProperties);
+            }
+        }
+
+        return new CardPayment($properties);
     }
 }
