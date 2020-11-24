@@ -23,7 +23,7 @@ class CardPaymentParser
         ];
         if (array_key_exists('PaymentDate', $data)) {
             $properties['paymentDate'] = new \DateTime($data['PaymentDate']);
-        } else if (array_key_exists('OperationDate', $data)) {
+        } elseif (array_key_exists('OperationDate', $data)) {
             $properties['paymentDate'] = new \DateTime($data['OperationDate']);
         }
         if (array_key_exists('Card', $data)) {
