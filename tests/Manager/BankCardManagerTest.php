@@ -55,7 +55,7 @@ class BankCardManagerTest extends SMoneyTestCase
         $bankCardRegistration = new BankCardRegistration($params);
 
         $manager->createBankCardRegistration($bankCardRegistration);
-        $this->assertSame($bankCardRegistration->status, 0);
+        $this->assertSame(BankCardRegistration::STATUS_PENDING, $bankCardRegistration->status);
         $this->assertNotNull($bankCardRegistration->href);
 
         $retrievedBankCardRegistration = $manager->retrieveBankCardRegistration(

@@ -32,15 +32,13 @@ class MandateManager
     public function createMandateRequest(
         string $appUserId,
         int $bankAccountId,
-        string $urlReturn,
-        string $urlCallback
+        string $urlReturn
     ): MandateRequest {
         $path = '/users/' . $appUserId . '/mandates';
         $method = RequestMethodInterface::METHOD_POST;
         $bankAccountData = [
             'bankaccount' => ['id' => $bankAccountId],
             'urlreturn'  => $urlReturn,
-            'urlcallback'  => $urlCallback,
         ];
 
         $res = $this->client->query($path, $method, $bankAccountData, 2);
