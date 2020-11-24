@@ -11,10 +11,7 @@ use Fig\Http\Message\RequestMethodInterface;
 
 class CardPaymentManager
 {
-    /**
-     * @var Client
-     */
-    protected $client;
+    protected Client $client;
 
     public function __construct(Client $client)
     {

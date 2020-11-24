@@ -12,10 +12,7 @@ use Psr\Http\Message\UploadedFileInterface;
 
 class MandateManager
 {
-    /**
-     * @var Client
-     */
-    protected $client;
+    protected Client $client;
 
     public function __construct(Client $client)
     {

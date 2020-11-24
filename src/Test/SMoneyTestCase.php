@@ -14,18 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class SMoneyTestCase extends TestCase
 {
-    /**
-     * @var Client
-     */
-    protected $client;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        if ($this->client) {
-            $this->client = null;
-        }
-    }
+    protected Client $client;
 
     protected function getClient(): Client
     {
