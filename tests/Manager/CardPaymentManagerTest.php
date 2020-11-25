@@ -54,7 +54,7 @@ class CardPaymentManagerTest extends SMoneyTestCase
         $params = [
             'orderId' => 'testA' . uniqid(),
             'isMine' => false,
-            'cardSubPayments' => [$cardSubPayment1, $cardSubPayment2],
+            'subPayments' => [$cardSubPayment1, $cardSubPayment2],
             'require3DS' => true,
             'urlReturn' => 'http://test.com/returnurl/',
             'amount' => 500,

@@ -33,14 +33,14 @@ class CardPaymentManager
 
         $subPaymentsTable = [];
 
-        if ($carSubPayments = $cardPayment->subPayments) {
-            foreach ($carSubPayments as $cardSubPayment) {
+        if ($subPayments = $cardPayment->subPayments) {
+            foreach ($subPayments as $subPayment) {
                 $subPaymentsTable[] =  [
-                    'orderId' => $cardSubPayment->orderId,
+                    'orderId' => $subPayment->orderId,
                     'beneficiary' => [
-                        'appaccountid' => $cardSubPayment->beneficiary['appaccountid'],
+                        'appaccountid' => $subPayment->beneficiary['appaccountid'],
                     ],
-                    'amount' => $cardSubPayment->amount,
+                    'amount' => $subPayment->amount,
                 ];
             }
         }
@@ -54,6 +54,7 @@ class CardPaymentManager
             'urlCallback' => $cardPayment->urlCallback,
             'amount' => $cardPayment->amount,
         ];
+
         $res = $this->client->query($path, $method, $data, 2);
 
         $data = json_decode($res->getBody()->__toString(), true);
