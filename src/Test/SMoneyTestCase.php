@@ -14,33 +14,15 @@ use PHPUnit\Framework\TestCase;
 
 class SMoneyTestCase extends TestCase
 {
-    /**
-     * @var Client
-     */
-    protected $client;
-
-    public function setUp()
-    {
-        parent::setUp();
-        if ($this->client) {
-            $this->client = null;
-        }
-    }
-
     protected function getClient(): Client
     {
-        // We instanciate a client if it does not exist yet
-        if (null === $this->client) {
-            $token = getenv('SMONEY_TOKEN');
-            $endpoint = getenv('SMONEY_ENDPOINT');
-            $signature = getenv('SMONEY_SIGNATURE');
+        $token = getenv('SMONEY_TOKEN');
+        $endpoint = getenv('SMONEY_ENDPOINT');
+        $signature = getenv('SMONEY_SIGNATURE');
 
-            $guzzleClient = new \GuzzleHttp\Client();
+        $guzzleClient = new \GuzzleHttp\Client();
 
-            $this->client = new Client($endpoint, $token, $guzzleClient, $signature);
-        }
-
-        return $this->client;
+        return new Client($endpoint, $token, $guzzleClient, $signature);
     }
 
     protected function helperCreateUser(bool $pro): User

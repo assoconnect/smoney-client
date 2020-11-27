@@ -32,6 +32,13 @@ class BankCardRegistration extends AbstractHydratable
     public $urlCallback;
 
     /**
+     * Form's URL where to redirect the user
+     *
+     * @var string
+     */
+    public $href;
+
+    /**
      * Error code for the registration
      *
      * @var string

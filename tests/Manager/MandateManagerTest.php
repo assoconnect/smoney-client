@@ -23,7 +23,6 @@ use GuzzleHttp\Psr7\UploadedFile;
 
 class MandateManagerTest extends SMoneyTestCase
 {
-
     public function testCreateMandateRequestSuccess()
     {
         $userPro = $this->helperCreateUser(true);
@@ -40,8 +39,7 @@ class MandateManagerTest extends SMoneyTestCase
         $mandateRequest = $mandateManager->createMandateRequest(
             $userPro->appUserId,
             $bankAccount->id,
-            'http://test.com/returnurl/',
-            'http://test.com/callbackurl/'
+            'http://test.com/returnurl/'
         );
         $mandateRequest = (array) $mandateRequest;
         $mandate = $mandateManager->getMandate($userPro->appUserId, $mandateRequest['id']);
@@ -73,8 +71,7 @@ class MandateManagerTest extends SMoneyTestCase
         $mandateRequest = $mandateManager->createMandateRequest(
             $userPro->appUserId,
             $bankAccount->id,
-            'http://test.com/returnurl/',
-            'http://test.com/callbackurl/'
+            'http://test.com/returnurl/'
         );
 
         $file1 = __DIR__ . '/../data/sample.pdf';

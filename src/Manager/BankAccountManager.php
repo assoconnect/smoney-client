@@ -13,10 +13,7 @@ use Fig\Http\Message\RequestMethodInterface;
 
 class BankAccountManager
 {
-    /**
-     * @var Client
-     */
-    protected $client;
+    protected Client $client;
 
     public function __construct(Client $client)
     {

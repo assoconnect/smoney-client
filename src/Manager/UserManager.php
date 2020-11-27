@@ -20,10 +20,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class UserManager
 {
-    /**
-     * @var Client
-     */
-    protected $client;
+    protected Client $client;
 
     public function __construct(Client $client)
     {

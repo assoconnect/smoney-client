@@ -14,33 +14,17 @@ use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
-    /**
-     * Guzzle Client
-     *
-     * @var ClientInterface
-     */
-    protected $client;
+    /** Guzzle Client */
+    protected ClientInterface $client;
 
-    /**
-     * S-Money endpoint
-     *
-     * @var string
-     */
-    protected $endpoint;
+    /** S-Money endpoint */
+    protected string $endpoint;
 
-    /**
-     * Client's S-Money token
-     *
-     * @var string
-     */
-    protected $token;
+    /** Client's S-Money token */
+    protected string $token;
 
-    /**
-     * S-Money signature
-     *
-     * @var string
-     */
-    protected $signature;
+    /** S-Money signature */
+    protected string $signature;
 
     public function __construct(string $endpoint, string $token, ClientInterface $client, string $signature)
     {
