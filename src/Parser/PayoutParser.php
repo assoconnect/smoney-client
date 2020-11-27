@@ -12,8 +12,8 @@ class PayoutParser
     {
         $properties = [
             'id'     => $data['Id'],
-            'orderId' => $orderId,
-            'amount' => $amount,
+            'orderId' => $data['OrderId'],
+            'amount' => $data['Amount'],
         ];
 
         return new Payout($properties);

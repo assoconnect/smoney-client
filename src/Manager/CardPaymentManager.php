@@ -10,6 +10,9 @@ use AssoConnect\SMoney\Object\CardSubPayment;
 use AssoConnect\SMoney\Parser\CardPaymentParser;
 use Fig\Http\Message\RequestMethodInterface;
 
+/**
+ * @link https://api.s-money.fr/documentation/utiliser-l-api/paiement-par-carte-bancaire/
+ */
 class CardPaymentManager
 {
     protected Client $client;
@@ -105,6 +108,9 @@ class CardPaymentManager
         return new CardSubPayment($properties);
     }
 
+    /**
+     * @return CardPayment[]
+     */
     public function retrieveCardPayments(int $page = 1, int $perPage = 50): array
     {
         $path = '/payins/cardpayments?page=' . $page . '&perPage=' . $perPage;

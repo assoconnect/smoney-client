@@ -80,6 +80,9 @@ class SepaPaymentManager
         return $this->parser->parse($data);
     }
 
+    /**
+     * @return SepaPayment[]
+     */
     public function retrieveSepaPayments(int $page = 1, int $perPage = 50): array
     {
         $path = '/payins/directdebit?page=' . $page . '&perPage=' . $perPage;

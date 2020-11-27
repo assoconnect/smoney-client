@@ -6,6 +6,7 @@ namespace AssoConnect\SMoney\Tests\Manager;
 
 use AssoConnect\SMoney\Exception\InvalidStringException;
 use AssoConnect\SMoney\Manager\PayoutManager;
+use AssoConnect\SMoney\Parser\PayoutParser;
 use AssoConnect\SMoney\Test\SMoneyTestCase;
 
 class PayoutManagerTest extends SMoneyTestCase
@@ -13,8 +14,9 @@ class PayoutManagerTest extends SMoneyTestCase
     protected function createManager(): PayoutManager
     {
         $client = $this->getClient();
+        $parser = new PayoutParser();
 
-        return new PayoutManager($client);
+        return new PayoutManager($client, $parser);
     }
 
     /**
@@ -66,5 +68,13 @@ class PayoutManagerTest extends SMoneyTestCase
         yield 'too long' => [str_repeat('a', 36)];
         yield 'special char' => ['hello!'];
         yield 'accent' => ['ééé'];
+    }
+
+    public function testRetrievePayoutsWorks(): void
+    {
+        $manager = $this->createManager();
+        $manager->retrievePayouts();
+
+        $this->expectNotToPerformAssertions();
     }
 }

@@ -70,6 +70,9 @@ class PayoutManager
         return $this->parser->parse($data);
     }
 
+    /**
+     * @return Payout[]
+     */
     public function retrievePayouts(int $page = 1, int $perPage = 50): array
     {
         $path = '/payouts?page=' . $page . '&perPage=' . $perPage;

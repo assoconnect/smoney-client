@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AssoConnect\SMoney\Manager;
 
 use AssoConnect\SMoney\Client;
+use AssoConnect\SMoney\Object\CardPayment;
 use AssoConnect\SMoney\Parser\CardPaymentParser;
 use Fig\Http\Message\RequestMethodInterface;
 
@@ -19,6 +20,9 @@ class StoredCardPaymentManager
         $this->parser = $parser;
     }
 
+    /**
+     * @return CardPayment[]
+     */
     public function retrieveStoredCardPayments(int $page = 1, int $perPage = 50): array
     {
         $path = '/payins/storedcardpayments?page=' . $page . '&perPage=' . $perPage;
