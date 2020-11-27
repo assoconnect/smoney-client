@@ -21,8 +21,8 @@ class InternalPaymentManagerTest extends SMoneyTestCase
     public function testRetrieveInternalPaymentsWorks(): void
     {
         $manager = $this->createManager();
-        $manager->retrieveInternalPayments();
+        $payments = $manager->retrieveInternalPayments();
 
-        $this->expectNotToPerformAssertions();
+        $this->assertNotEmpty($payments);
     }
 }

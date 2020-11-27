@@ -21,8 +21,8 @@ class SepaPaymentManagerTest extends SMoneyTestCase
     public function testRetrieveSepaPaymentsWorks(): void
     {
         $manager = $this->createManager();
-        $manager->retrieveSepaPayments();
+        $payments = $manager->retrieveSepaPayments();
 
-        $this->expectNotToPerformAssertions();
+        $this->assertNotEmpty($payments);
     }
 }

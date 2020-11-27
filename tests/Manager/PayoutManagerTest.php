@@ -73,8 +73,8 @@ class PayoutManagerTest extends SMoneyTestCase
     public function testRetrievePayoutsWorks(): void
     {
         $manager = $this->createManager();
-        $manager->retrievePayouts();
+        $payouts = $manager->retrievePayouts();
 
-        $this->expectNotToPerformAssertions();
+        $this->assertNotEmpty($payouts);
     }
 }

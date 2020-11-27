@@ -81,8 +81,8 @@ class CardPaymentManagerTest extends SMoneyTestCase
     public function testRetrieveCardPaymentsWorks(): void
     {
         $manager = $this->createManager();
-        $manager->retrieveCardPayments();
+        $payments = $manager->retrieveCardPayments();
 
-        $this->expectNotToPerformAssertions();
+        $this->assertNotEmpty($payments);
     }
 }
