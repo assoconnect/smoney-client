@@ -71,4 +71,24 @@ class CardPaymentParserTest extends TestCase
         $this->assertSame($status, $cardSubPayment->status);
         $this->assertSame($amount, $cardSubPayment->amount);
     }
+
+    public function testParserWorksWithOperationDate(): void
+    {
+        $data = [
+            'Id' => $id = 123,
+            'OrderId' => $orderId = 'app ref',
+            'Status' => $status = CardPayment::STATUS_SUCCESS,
+            'Amount' => $amount = 100,
+            'OperationDate' => $paymentDate = '2013-09-10T15:49:58.791+02:00',
+        ];
+
+        $parser = new CardPaymentParser();
+        $cardPayment = $parser->parse($data);
+
+        $this->assertSame($id, $cardPayment->id);
+        $this->assertSame($orderId, $cardPayment->orderId);
+        $this->assertSame($status, $cardPayment->status);
+        $this->assertSame($amount, $cardPayment->amount);
+        $this->assertSame($paymentDate, $cardPayment->paymentDate->format(DATE_RFC3339_EXTENDED));
+    }
 }
