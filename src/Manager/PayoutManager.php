@@ -7,17 +7,22 @@ namespace AssoConnect\SMoney\Manager;
 use AssoConnect\SMoney\Client;
 use AssoConnect\SMoney\Exception\InvalidStringException;
 use AssoConnect\SMoney\Object\Payout;
+use AssoConnect\SMoney\Parser\PayoutParser;
 use Fig\Http\Message\RequestMethodInterface;
 
+/**
+ * @link https://api.s-money.fr/documentation/utiliser-l-api/virement-vers-un-compte-bancaire/
+ */
 class PayoutManager
 {
     protected Client $client;
+    protected PayoutParser $parser;
 
-    public function __construct(Client $client)
+    public function __construct(Client $client, PayoutParser $parser)
     {
         $this->client = $client;
+        $this->parser = $parser;
     }
-
 
     public function createPayout(
         string $appUserId,
@@ -62,12 +67,18 @@ class PayoutManager
         $res = $this->client->query($path, $method, $payoutData, 1);
         $data = json_decode($res->getBody()->__toString(), true);
 
-        $properties = [
-            'id'     => $data['Id'],
-            'orderId' => $orderId,
-            'amount' => $amount,
-        ];
+        return $this->parser->parse($data);
+    }
 
-        return new Payout($properties);
+    public function retrievePayouts(int $page = 1, int $perPage = 50): array
+    {
+        $path = '/payouts?page=' . $page . '&perPage=' . $perPage;
+        $method = RequestMethodInterface::METHOD_GET;
+
+        $res = $this->client->query($path, $method);
+
+        $data = json_decode($res->getBody()->__toString(), true);
+
+        return array_map([$this->parser, 'parse'], $data);
     }
 }
