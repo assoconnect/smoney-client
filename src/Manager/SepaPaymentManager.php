@@ -85,7 +85,7 @@ class SepaPaymentManager
      */
     public function retrieveSepaPayments(int $page = 1, int $perPage = 50): array
     {
-        $path = '/payins/directdebit?page=' . $page . '&perPage=' . $perPage;
+        $path = '/payins/directdebits?page=' . $page . '&perPage=' . $perPage;
         $method = RequestMethodInterface::METHOD_GET;
 
         $res = $this->client->query($path, $method);
