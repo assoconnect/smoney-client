@@ -8,22 +8,8 @@ namespace AssoConnect\SMoney\Object;
  * Online payment with a card on the S-Money hosted form.
  * This object can also describe a refund.
  */
-class CardPayment extends AbstractHydratable
+class CardPayment extends AbstractPayment
 {
-    /**
-     * S-Money generated CardPayment's ID
-     *
-     * @var int
-     */
-    public $id;
-
-    /**
-     * Third-party generated CardPayment's ID
-     *
-     * @var string
-     */
-    public $orderId;
-
     /**
      * Card used by the end-user to pay
      *
@@ -83,13 +69,6 @@ class CardPayment extends AbstractHydratable
      * The payment has been canceled before completion
      */
     public const STATUS_CANCELED = 5;
-
-    /**
-     * CardPayment's status
-     *
-     * @var int
-     */
-    public $status;
 
     public const TYPE_PAYMENT = 0;
     public const TYPE_REFUND = 1;

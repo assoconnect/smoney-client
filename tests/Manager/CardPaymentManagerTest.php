@@ -9,6 +9,7 @@ use AssoConnect\SMoney\Manager\UserManager;
 use AssoConnect\SMoney\Object\CardPayment;
 use AssoConnect\SMoney\Object\CardSubPayment;
 use AssoConnect\SMoney\Object\SubAccount;
+use AssoConnect\SMoney\Parser\CardPaymentParser;
 use AssoConnect\SMoney\Test\SMoneyTestCase;
 
 class CardPaymentManagerTest extends SMoneyTestCase
@@ -16,8 +17,9 @@ class CardPaymentManagerTest extends SMoneyTestCase
     protected function createManager(): CardPaymentManager
     {
         $client = $this->getClient();
+        $parser = new CardPaymentParser();
 
-        return new CardPaymentManager($client);
+        return new CardPaymentManager($client, $parser);
     }
 
     public function testCreateRetrieveCardPayment()
@@ -52,7 +54,7 @@ class CardPaymentManagerTest extends SMoneyTestCase
         $params = [
             'orderId' => 'testA' . uniqid(),
             'isMine' => false,
-            'cardSubPayments' => [$cardSubPayment1, $cardSubPayment2],
+            'subPayments' => [$cardSubPayment1, $cardSubPayment2],
             'require3DS' => true,
             'urlReturn' => 'http://test.com/returnurl/',
             'amount' => 500,
@@ -74,5 +76,13 @@ class CardPaymentManagerTest extends SMoneyTestCase
 
         $retrievedSubPayment2 = $manager->retrieveCardSubPayment($cardPayment->orderId, $cardSubPayment2->orderId);
         $this->assertSame($retrievedSubPayment2->amount, $cardSubPayment2->amount);
+    }
+
+    public function testRetrieveCardPaymentsWorks(): void
+    {
+        $manager = $this->createManager();
+        $payments = $manager->retrieveCardPayments();
+
+        $this->assertNotEmpty($payments);
     }
 }

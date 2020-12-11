@@ -7,15 +7,21 @@ namespace AssoConnect\SMoney\Manager;
 use AssoConnect\SMoney\Client;
 use AssoConnect\SMoney\Object\CardPayment;
 use AssoConnect\SMoney\Object\CardSubPayment;
+use AssoConnect\SMoney\Parser\CardPaymentParser;
 use Fig\Http\Message\RequestMethodInterface;
 
+/**
+ * @link https://api.s-money.fr/documentation/utiliser-l-api/paiement-par-carte-bancaire/
+ */
 class CardPaymentManager
 {
     protected Client $client;
+    protected CardPaymentParser $parser;
 
-    public function __construct(Client $client)
+    public function __construct(Client $client, CardPaymentParser $parser)
     {
         $this->client = $client;
+        $this->parser = $parser;
     }
 
     /**
@@ -23,21 +29,21 @@ class CardPaymentManager
      * @param $cardPayment
      * @return CardPayment
      */
-    public function createCardPayment($cardPayment): CardPayment
+    public function createCardPayment(CardPayment $cardPayment): CardPayment
     {
         $path = '/payins/cardpayments';
         $method = RequestMethodInterface::METHOD_POST;
 
         $subPaymentsTable = [];
 
-        if ($carSubPayments = $cardPayment->cardSubPayments) {
-            foreach ($carSubPayments as $cardSubPayment) {
+        if ($subPayments = $cardPayment->subPayments) {
+            foreach ($subPayments as $subPayment) {
                 $subPaymentsTable[] =  [
-                    'orderId' => $cardSubPayment->orderId,
+                    'orderId' => $subPayment->orderId,
                     'beneficiary' => [
-                        'appaccountid' => $cardSubPayment->beneficiary['appaccountid'],
+                        'appaccountid' => $subPayment->beneficiary['appaccountid'],
                     ],
-                    'amount' => $cardSubPayment->amount,
+                    'amount' => $subPayment->amount,
                 ];
             }
         }
@@ -51,6 +57,7 @@ class CardPaymentManager
             'urlCallback' => $cardPayment->urlCallback,
             'amount' => $cardPayment->amount,
         ];
+
         $res = $this->client->query($path, $method, $data, 2);
 
         $data = json_decode($res->getBody()->__toString(), true);
@@ -73,32 +80,7 @@ class CardPaymentManager
 
         $data = json_decode($res->getBody()->__toString(), true);
 
-        $properties = [
-            'id'     => $data['Id'],
-            'status' => $data['Status'],
-            'type'   => $data['Type'],
-            'amount' => $data['Amount'],
-            'card'      => $data['Card'],
-            'extraResults' => $data['ExtraResults'],
-            'errorCode' => $data['ErrorCode'],
-            'subPayments' => [],
-        ];
-        if (array_key_exists('Payments', $data)) {
-            foreach ($data['Payments'] as $subPaymentData) {
-                $subPaymentProperties = [
-                    'id'            => $subPaymentData['Id'],
-                    'orderId'       => $subPaymentData['OrderId'],
-                    'beneficiary'   => $subPaymentData['Beneficiary'],
-                    'amount'        => $subPaymentData['Amount'],
-                    'status'        => $subPaymentData['Status'],
-                ];
-                $properties['subPayments'][] = new CardSubPayment($subPaymentProperties);
-            }
-        }
-
-        $cardPayment = new CardPayment($properties);
-
-        return $cardPayment;
+        return $this->parser->parse($data);
     }
 
     /**
@@ -124,5 +106,20 @@ class CardPaymentManager
             'extraResults' => $data['ExtraResults'],
         ];
         return new CardSubPayment($properties);
+    }
+
+    /**
+     * @return CardPayment[]
+     */
+    public function retrieveCardPayments(int $page = 1, int $perPage = 50): array
+    {
+        $path = '/payins/cardpayments?page=' . $page . '&perPage=' . $perPage;
+        $method = RequestMethodInterface::METHOD_GET;
+
+        $res = $this->client->query($path, $method, null);
+
+        $data = json_decode($res->getBody()->__toString(), true);
+
+        return array_map([$this->parser, 'parse'], $data);
     }
 }
