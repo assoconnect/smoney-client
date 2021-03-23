@@ -17,6 +17,7 @@ class PayoutParserTest extends TestCase
             'OrderId' => $orderId = 'order id',
             'Amount'  => $amount = 456,
             'OperationDate' => $operationDate = '2021-03-23T15:38:00',
+            'Status' => 1,
         ];
 
         $parser = new PayoutParser();
@@ -28,6 +29,7 @@ class PayoutParserTest extends TestCase
         $this->assertSame($amount, $payout->amount);
         $this->assertSame($operationDate, $payout->requestDate->format(DATE_RFC3339));
         $this->assertSame(null, $payout->executedDate);
+        $this->assertSame(1, $payout->status);
     }
 
     public function testParserWithExecutedDateWorks(): void
@@ -38,7 +40,7 @@ class PayoutParserTest extends TestCase
             'Amount'  => $amount = 456,
             'OperationDate' => $operationDate = '2021-03-23T15:38:00',
             'ExecutedDate' => $executedDate = '2021-03-26T15:38:00',
-
+            'Status' => 1,
         ];
 
         $parser = new PayoutParser();
@@ -50,5 +52,6 @@ class PayoutParserTest extends TestCase
         $this->assertSame($amount, $payout->amount);
         $this->assertSame($operationDate, $payout->requestDate->format(DATE_RFC3339));
         $this->assertSame($executedDate, $payout->executedDate->format(DATE_RFC3339));
+        $this->assertSame(1, $payout->status);
     }
 }
