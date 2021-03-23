@@ -14,7 +14,15 @@ class PayoutParser
             'id'     => $data['Id'],
             'orderId' => $data['OrderId'],
             'amount' => $data['Amount'],
+            'status' => $data['Status'],
         ];
+
+        if (array_key_exists('ExecutedDate', $data)) {
+            $properties['executionDate'] = new \DateTime($data['ExecutedDate']);
+        }
+        if (array_key_exists('OperationDate', $data)) {
+            $properties['requestDate'] = new \DateTime($data['OperationDate']);
+        }
 
         return new Payout($properties);
     }
