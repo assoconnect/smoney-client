@@ -49,5 +49,5 @@ class Payout extends AbstractHydratable
      *
      * @var \DateTime
      */
-    public $executionDate;
+    public $executedDate;
 }

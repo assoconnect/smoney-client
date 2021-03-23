@@ -21,7 +21,7 @@ class CardPaymentParser
             'extraResults' => $data['ExtraResults'] ?? $data['ExtraParameters'] ?? null,
             'errorCode'    => $data['ErrorCode'] ?? null,
             'subPayments'  => [],
-            'refunds' => [],
+            'refunds'      => [],
         ];
         if (array_key_exists('PaymentDate', $data)) {
             $properties['paymentDate'] = new \DateTime($data['PaymentDate']);
