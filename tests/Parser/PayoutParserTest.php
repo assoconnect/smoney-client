@@ -27,7 +27,7 @@ class PayoutParserTest extends TestCase
         $this->assertSame($id, $payout->id);
         $this->assertSame($orderId, $payout->orderId);
         $this->assertSame($amount, $payout->amount);
-        $this->assertSame($operationDate, $payout->requestDate->format(DATE_ISO8601));
+        $this->assertSame($operationDate . '+0000', $payout->requestDate->format(DATE_ISO8601));
         $this->assertSame(null, $payout->executedDate);
         $this->assertSame(1, $payout->status);
     }
@@ -50,8 +50,8 @@ class PayoutParserTest extends TestCase
         $this->assertSame($id, $payout->id);
         $this->assertSame($orderId, $payout->orderId);
         $this->assertSame($amount, $payout->amount);
-        $this->assertSame($operationDate, $payout->requestDate->format(DATE_ISO8601));
-        $this->assertSame($executedDate, $payout->executedDate->format(DATE_ISO8601));
+        $this->assertSame($operationDate . '+0000', $payout->requestDate->format(DATE_ISO8601));
+        $this->assertSame($executedDate . '+0000', $payout->executedDate->format(DATE_ISO8601));
         $this->assertSame(1, $payout->status);
     }
 }
