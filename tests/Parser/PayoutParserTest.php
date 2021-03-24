@@ -16,6 +16,8 @@ class PayoutParserTest extends TestCase
             'Id'      => $id = 123,
             'OrderId' => $orderId = 'order id',
             'Amount'  => $amount = 456,
+            'OperationDate' => $operationDate = '2021-03-23T15:38:00',
+            'Status' => 1,
         ];
 
         $parser = new PayoutParser();
@@ -25,5 +27,31 @@ class PayoutParserTest extends TestCase
         $this->assertSame($id, $payout->id);
         $this->assertSame($orderId, $payout->orderId);
         $this->assertSame($amount, $payout->amount);
+        $this->assertSame($operationDate . '+0000', $payout->requestDate->format(DATE_ISO8601));
+        $this->assertSame(null, $payout->executedDate);
+        $this->assertSame(1, $payout->status);
+    }
+
+    public function testParserWithExecutedDateWorks(): void
+    {
+        $data = [
+            'Id'      => $id = 123,
+            'OrderId' => $orderId = 'order id',
+            'Amount'  => $amount = 456,
+            'OperationDate' => $operationDate = '2021-03-23T15:38:00',
+            'ExecutedDate' => $executedDate = '2021-03-26T15:38:00',
+            'Status' => 1,
+        ];
+
+        $parser = new PayoutParser();
+        $payout = $parser->parse($data);
+
+        $this->assertInstanceOf(Payout::class, $payout);
+        $this->assertSame($id, $payout->id);
+        $this->assertSame($orderId, $payout->orderId);
+        $this->assertSame($amount, $payout->amount);
+        $this->assertSame($operationDate . '+0000', $payout->requestDate->format(DATE_ISO8601));
+        $this->assertSame($executedDate . '+0000', $payout->executedDate->format(DATE_ISO8601));
+        $this->assertSame(1, $payout->status);
     }
 }

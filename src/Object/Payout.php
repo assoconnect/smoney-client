@@ -29,4 +29,25 @@ class Payout extends AbstractHydratable
      * @var int
      */
     public $amount;
+
+    /**
+     * Payout's status
+     *
+     * @var int
+     */
+    public $status;
+
+    /**
+     * Payout's request date
+     *
+     * @var \DateTime
+     */
+    public $requestDate;
+
+    /**
+     * Payout's execution date
+     *
+     * @var \DateTime
+     */
+    public $executedDate;
 }

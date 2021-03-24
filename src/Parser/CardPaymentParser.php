@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AssoConnect\SMoney\Parser;
 
 use AssoConnect\SMoney\Object\CardPayment;
+use AssoConnect\SMoney\Object\CardRefund;
 use AssoConnect\SMoney\Object\CardSubPayment;
 
 class CardPaymentParser
@@ -20,6 +21,7 @@ class CardPaymentParser
             'extraResults' => $data['ExtraResults'] ?? $data['ExtraParameters'] ?? null,
             'errorCode'    => $data['ErrorCode'] ?? null,
             'subPayments'  => [],
+            'refunds'      => [],
         ];
         if (array_key_exists('PaymentDate', $data)) {
             $properties['paymentDate'] = new \DateTime($data['PaymentDate']);
@@ -39,6 +41,16 @@ class CardPaymentParser
                     'status'        => $subPaymentData['Status'],
                 ];
                 $properties['subPayments'][] = new CardSubPayment($subPaymentProperties);
+            }
+        }
+        if (array_key_exists('Refunds', $data)) {
+            foreach ($data['Refunds'] as $refundData) {
+                $refundProperties = [
+                    'id'            => $refundData['Id'],
+                    'orderId'       => $refundData['OrderId'],
+                    'status'        => $refundData['Status'],
+                ];
+                $properties['refunds'][] = new CardRefund($refundProperties);
             }
         }
 

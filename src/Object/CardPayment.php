@@ -25,6 +25,13 @@ class CardPayment extends AbstractPayment
     public $subPayments = [];
 
     /**
+     * List of refunds on this payment.
+     *
+     * @var CardRefund[]
+     */
+    public $refunds = [];
+
+    /**
      * True if the card holder is the same as the beneficiary
      *
      * @var bool
