@@ -53,7 +53,6 @@ class CardPaymentParserTest extends TestCase
                 [
                     'Id' => $refundId = 321,
                     'OrderId' => $refundOrderId = 'app ref refund',
-                    'Status' => $refundStatus  = CardPayment::STATUS_SUCCESS,
                 ]
             ]
         ];
@@ -81,7 +80,6 @@ class CardPaymentParserTest extends TestCase
         $refundPayment = $cardPayment->refunds[0];
         $this->assertSame($refundId, $refundPayment->id);
         $this->assertSame($refundOrderId, $refundPayment->orderId);
-        $this->assertSame($refundStatus, $refundPayment->status);
     }
 
     public function testParserWorksWithOperationDate(): void

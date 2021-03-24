@@ -48,7 +48,6 @@ class CardPaymentParser
                 $refundProperties = [
                     'id'            => $refundData['Id'],
                     'orderId'       => $refundData['OrderId'],
-                    'status'        => $refundData['Status'],
                 ];
                 $properties['refunds'][] = new CardRefund($refundProperties);
             }
