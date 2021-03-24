@@ -19,11 +19,4 @@ class CardRefund extends AbstractHydratable
      * @var string
      */
     public $orderId;
-
-    /**
-     * Refund's status
-     *
-     * @var int
-     */
-    public $status;
 }
