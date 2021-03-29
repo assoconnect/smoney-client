@@ -17,10 +17,10 @@ class PayoutParser
             'status'  => $data['Status'],
         ];
 
-        if (array_key_exists('ExecutedDate', $data)) {
+        if (array_key_exists('ExecutedDate', $data) && $data['ExecutedDate'] !== null) {
             $properties['executedDate'] = new \DateTime($data['ExecutedDate']);
         }
-        if (array_key_exists('OperationDate', $data)) {
+        if (array_key_exists('OperationDate', $data) && $data['OperationDate'] !== null) {
             $properties['requestDate'] = new \DateTime($data['OperationDate']);
         }
 
