@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit>
-    <php>
-        <env name="SMONEY_ENDPOINT" value="https://rest-pp.s-money.fr/api/sandbox" />
-        <env name="SMONEY_TOKEN" value="" />
-        <env name="SMONEY_SIGNATURE" value="0" />
-    </php>
-    <testsuites>
-        <testsuite name="S-Money PHP client">
-            <directory>tests/</directory>
-        </testsuite>
-    </testsuites>
-	<filter>
-		<whitelist processUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">./src</directory>
-		</whitelist>
-	</filter>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="./vendor/autoload.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <php>
+    <env name="SMONEY_ENDPOINT" value="https://rest-pp.s-money.fr/api/sandbox"/>
+    <env name="SMONEY_TOKEN" value=""/>
+    <env name="SMONEY_SIGNATURE" value="0"/>
+  </php>
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+  </coverage>
+  <testsuites>
+    <testsuite name="main">
+      <directory>./tests/</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>
